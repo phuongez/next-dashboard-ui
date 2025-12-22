@@ -9,7 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "next": "14.2.5",
+    "@recharts/devtools": "^0.0.5",
+    "next": "^16.1.1-canary.2",
     "react": "^18",
     "react-dom": "^18",
     "recharts": "^3.6.0"

@@ -22,7 +22,7 @@ const data = [
 
 const CountChart = () => {
   return (
-    <div className="bg-white rounded-xl w-full p-4">
+    <div className="bg-white rounded-xl h-full p-4">
       {/* Title */}
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold">Học sinh</h1>
