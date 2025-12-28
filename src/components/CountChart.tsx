@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { RadialBarChart, RadialBar, Legend } from "recharts";
+import { RechartsDevtools } from "@recharts/devtools";
 
 const data = [
   {
@@ -22,24 +23,30 @@ const data = [
 
 const CountChart = () => {
   return (
-    <div className="bg-white rounded-xl h-full p-4">
+    <div className="bg-white rounded-xl w-full h-full p-4">
       {/* Title */}
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold">Học sinh</h1>
         <Image src={"/moreDark.png"} alt="" width={20} height={20} />
       </div>
       {/* Chart */}
-      <div className="relative w-full h-[75%]">
+      <div className="relative w-full h-[75%] flex items-center justify-center">
         <RadialBarChart
+          style={{
+            width: "100%",
+            aspectRatio: 1.4,
+          }}
           responsive
           cx="50%"
-          cy="50%"
-          innerRadius={"40%"}
+          cy={"50%"}
+          innerRadius={"30%"}
           outerRadius={"100%"}
-          barSize={32}
+          barSize={20}
           data={data}
         >
           <RadialBar background dataKey="count" />
+
+          <RechartsDevtools />
         </RadialBarChart>
         <Image
           src="/maleFemale.png"
