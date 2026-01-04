@@ -1,17 +1,11 @@
+import FormContainer from "@/components/FormContainer";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import { Class, Prisma, Teacher } from "@/generated/prisma/client";
-import {
-  classesData,
-  parentsData,
-  role,
-  studentsData,
-  subjectsData,
-  teachersData,
-} from "@/lib/data";
 import { prisma } from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
+import { role } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -35,10 +29,14 @@ const columns = [
     accessor: "supervisor",
     className: "hidden md:table-cell",
   },
-  {
-    header: "Actions",
-    accessor: "actions",
-  },
+  ...(role === "admin"
+    ? [
+        {
+          header: "Actions",
+          accessor: "action",
+        },
+      ]
+    : []),
 ];
 
 const renderRow = (item: ClassList) => (
@@ -55,15 +53,11 @@ const renderRow = (item: ClassList) => (
 
     <td>
       <div className="flex items-center gap-2">
-        <Link href={`/list/teachers/${item.id}`}>
-          <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
-            <Image src={"/update.png"} alt="" width={16} height={16} />
-          </button>
-        </Link>
         {role === "admin" && (
-          <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaPurple">
-            <Image src={"/delete.png"} alt="" width={16} height={16} />
-          </button>
+          <>
+            <FormContainer table="class" type="update" data={item} />
+            <FormContainer table="class" type="delete" id={item.id} />
+          </>
         )}
       </div>
     </td>
@@ -131,11 +125,7 @@ const ClassListPage = async ({
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
               <Image src={"/sort.png"} alt="" width={14} height={14} />
             </button>
-            {role === "admin" && (
-              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-                <Image src={"/create.png"} alt="" width={14} height={14} />
-              </button>
-            )}
+            {role === "admin" && <FormContainer table="class" type="create" />}
           </div>
         </div>
       </div>

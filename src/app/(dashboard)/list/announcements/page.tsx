@@ -1,10 +1,12 @@
+import FormContainer from "@/components/FormContainer";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import { Announcement, Class, Prisma } from "@/generated/prisma/client";
-import { announcementsData, role } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
+import { currentUserId, role } from "@/lib/utils";
+import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -12,59 +14,60 @@ type AnnouncementList = Announcement & {
   class: Class;
 };
 
-const columns = [
-  {
-    header: "Tên sự kiện",
-    accessor: "title",
-  },
-  {
-    header: "Lớp",
-    accessor: "class",
-    // className: "hidden md:table-cell",
-  },
-  {
-    header: "Ngày",
-    accessor: "date",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Actions",
-    accessor: "actions",
-  },
-];
-
-const renderRow = (item: AnnouncementList) => (
-  <tr
-    key={item.id}
-    className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
-  >
-    <td className="flex items-center gap-4 p-4">{item.title}</td>
-    <td className="">{item.class.name}</td>
-    <td className="hidden md:table-cell">
-      {new Intl.DateTimeFormat("vi-VN").format(item.date)}
-    </td>
-
-    <td>
-      <div className="flex items-center gap-2">
-        <Link href={`/list/teachers/${item.id}`}>
-          <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
-            <Image src={"/update.png"} alt="" width={16} height={16} />
-          </button>
-        </Link>
-        {role === "admin" && (
-          <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaPurple">
-            <Image src={"/delete.png"} alt="" width={16} height={16} />
-          </button>
-        )}
-      </div>
-    </td>
-  </tr>
-);
 const AnnouncementListPage = async ({
   searchParams,
 }: {
   searchParams: { [key: string]: string } | undefined;
 }) => {
+  const columns = [
+    {
+      header: "Tên sự kiện",
+      accessor: "title",
+    },
+    {
+      header: "Lớp",
+      accessor: "class",
+      // className: "hidden md:table-cell",
+    },
+    {
+      header: "Ngày",
+      accessor: "date",
+      className: "hidden md:table-cell",
+    },
+    ...(role === "admin"
+      ? [
+          {
+            header: "Actions",
+            accessor: "action",
+          },
+        ]
+      : []),
+  ];
+
+  const renderRow = (item: AnnouncementList) => (
+    <tr
+      key={item.id}
+      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
+    >
+      <td className="flex items-center gap-4 p-4">{item.title}</td>
+      <td className="">{item.class?.name || "-"}</td>
+      <td className="hidden md:table-cell">
+        {new Intl.DateTimeFormat("vi-VN").format(item.date)}
+      </td>
+
+      <td>
+        <div className="flex items-center gap-2">
+          {role === "admin" && (
+            <>
+              <FormContainer table="announcement" type="update" data={item} />
+              <FormContainer table="announcement" type="delete" id={item.id} />
+            </>
+          )}
+        </div>
+      </td>
+    </tr>
+  );
+
   const { page, ...queryParams } = (await searchParams) || {};
 
   const p = page ? parseInt(page) : 1;
@@ -89,6 +92,24 @@ const AnnouncementListPage = async ({
       }
     }
   }
+
+  // ROLE CONDITIONS
+
+  const roleConditions = {
+    teacher: { lessons: { some: { teacherId: currentUserId! } } },
+    student: { students: { some: { id: currentUserId! } } },
+    parent: { students: { some: { parentId: currentUserId! } } },
+  };
+
+  query.OR = [
+    { classId: null },
+    {
+      // class: roleConditions[role as keyof typeof roleConditions] || {},
+      class: roleConditions[role as keyof typeof roleConditions] || {},
+    },
+  ];
+
+  console.log(query);
 
   const [data, count] = await prisma.$transaction([
     prisma.announcement.findMany({

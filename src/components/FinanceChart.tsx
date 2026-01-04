@@ -79,7 +79,7 @@ const FinanceChart = () => {
   return (
     <div className="bg-white rounded-lg h-full p-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold">Finance</h1>
+        <h1 className="text-lg font-semibold">Tài chính</h1>
         <Image src="/moreDark.png" alt="" width={20} height={20} />
       </div>
       <LineChart
@@ -123,13 +123,13 @@ const FinanceChart = () => {
         <Line
           type="monotone"
           dataKey="expense"
-          stroke="#CFCEFF"
+          stroke="#F05A7E"
           strokeWidth={5}
         />
         <Line
           type="monotone"
           dataKey="income"
-          stroke="#C3EBFA"
+          stroke="#6FC28D"
           strokeWidth={5}
         />
         <RechartsDevtools />

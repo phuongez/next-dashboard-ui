@@ -2,70 +2,90 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import z from "zod";
-import { fi } from "zod/locales";
 import InputField from "../InputField";
 import Image from "next/image";
-
-const schema = z.object({
-  username: z
-    .string()
-    .min(3, { message: "Tên đăng nhập cần ít nhất 3 kí tự" })
-    .max(32, { message: "Tên đăng nhập tối đa 32 kí tự" }),
-  email: z.string().email({ message: "Email không hợp lệ" }),
-  password: z.string().min(8, { message: "Mật khẩu cần ít nhất 6 kí tự" }),
-  firstName: z.string().min(1, { message: "Cần có tên" }),
-  lastName: z.string().min(1, { message: "Cần có họ và tên đệm" }),
-  phone: z.string().min(1, { message: "Cần có số điện thoại" }),
-  address: z.string().min(1, { message: "Cần có địa chỉ" }),
-  bloodType: z.string().min(1, { message: "Cần có nhóm máu" }),
-  birthday: z.date({ message: "Cần có ngày sinh" }),
-  sex: z.enum(["male", "female"], { message: "Cần có giới tính" }),
-  img: z.instanceof(File, { message: "Cần có hình ảnh" }),
-});
-
-type Inputs = z.infer<typeof schema>;
+import {
+  Dispatch,
+  SetStateAction,
+  useActionState,
+  useEffect,
+  useState,
+} from "react";
+import { teacherSchema, TeacherSchema } from "@/lib/formValidationSchemas";
+import { useFormState } from "react-dom";
+import { createTeacher, updateTeacher } from "@/lib/actions";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { CldUploadWidget } from "next-cloudinary";
 
 const TeacherForm = ({
   type,
   data,
+  setOpen,
+  relatedData,
 }: {
   type: "create" | "update";
   data?: any;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  relatedData?: any;
 }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Inputs>({
-    resolver: zodResolver(schema),
+  } = useForm<TeacherSchema>({
+    resolver: zodResolver(teacherSchema),
   });
+
+  const [img, setImg] = useState<any>();
+
+  const [state, formAction] = useActionState(
+    type === "create" ? createTeacher : updateTeacher,
+    {
+      success: false,
+      error: false,
+    }
+  );
 
   const onSubmit = handleSubmit((data) => {
     console.log(data);
+    formAction({ ...data, img: img?.secure_url });
   });
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state.success) {
+      toast(`Giáo viên đã được ${type === "create" ? "tạo" : "cập nhật"}!`);
+      setOpen(false);
+      router.refresh();
+    }
+  }, [state, router, type, setOpen]);
+
+  const { subjects } = relatedData;
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold">Tạo giáo viên mới</h1>
+      <h1 className="text-xl font-semibold">
+        {type === "create" ? "Tạo giáo viên mới" : "Cập nhật giáo viên"}
+      </h1>
       <span className="text-xs text-gray-400 font-medium">
         Thông tin đăng nhập
       </span>
       <div className="flex justify-between flex-wrap gap-4">
         <InputField
-          label="Tên đăng nhập"
+          label="Tên người dùng"
           name="username"
           defaultValue={data?.username}
           register={register}
-          error={errors.username}
+          error={errors?.username}
         />
         <InputField
           label="Email"
           name="email"
-          type="email"
           defaultValue={data?.email}
           register={register}
-          error={errors.email}
+          error={errors?.email}
         />
         <InputField
           label="Mật khẩu"
@@ -73,7 +93,7 @@ const TeacherForm = ({
           type="password"
           defaultValue={data?.password}
           register={register}
-          error={errors.password}
+          error={errors?.password}
         />
       </div>
       <span className="text-xs text-gray-400 font-medium">
@@ -82,17 +102,17 @@ const TeacherForm = ({
       <div className="flex justify-between flex-wrap gap-4">
         <InputField
           label="Tên"
-          name="firstName"
-          defaultValue={data?.firstName}
+          name="name"
+          defaultValue={data?.name}
           register={register}
-          error={errors.firstName}
+          error={errors.name}
         />
         <InputField
           label="Họ & tên đệm"
-          name="lastName"
-          defaultValue={data?.lastName}
+          name="surname"
+          defaultValue={data?.surname}
           register={register}
-          error={errors.lastName}
+          error={errors.surname}
         />
         <InputField
           label="Điện thoại"
@@ -118,11 +138,21 @@ const TeacherForm = ({
         <InputField
           label="Sinh nhật"
           name="birthday"
-          defaultValue={data?.birthday}
+          defaultValue={data?.birthday.toISOString().split("T")[0]}
           register={register}
           error={errors.birthday}
           type="date"
         />
+        {data && (
+          <InputField
+            label="Id"
+            name="id"
+            defaultValue={data?.id}
+            register={register}
+            error={errors?.id}
+            hidden
+          />
+        )}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Giới tính</label>
           <select
@@ -130,8 +160,8 @@ const TeacherForm = ({
             {...register("sex")}
             defaultValue={data?.sex}
           >
-            <option value="male">Nam</option>
-            <option value="female">Nữ</option>
+            <option value="MALE">Nam</option>
+            <option value="FEMALE">Nữ</option>
           </select>
           {errors.sex?.message && (
             <p className="text-xs text-red-400">
@@ -139,25 +169,49 @@ const TeacherForm = ({
             </p>
           )}
         </div>
-        <div className="flex flex-col gap-2 w-full md:w-1/4 justify-center">
-          <label
-            className="text-xs text-gray-500 flex items-center gap-2 cursor-pointer"
-            htmlFor="img"
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">Bộ môn</label>
+          <select
+            multiple
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            {...register("subjects")}
+            defaultValue={data?.subjects}
           >
-            <Image src="/upload.png" alt="" width={28} height={28} />
-            <span>Tải lên hình ảnh</span>
-          </label>
-          <input type="file" id="img" {...register("img")} className="hidden" />
-          {errors.img?.message && (
+            {subjects.map((subject: { id: number; name: string }) => (
+              <option value={subject.id} key={subject.id}>
+                {subject.name}
+              </option>
+            ))}
+          </select>
+          {errors.subjects?.message && (
             <p className="text-xs text-red-400">
-              {errors.img.message.toString()}
+              {errors.subjects.message.toString()}
             </p>
           )}
         </div>
+        <CldUploadWidget
+          uploadPreset="school"
+          onSuccess={(result, { widget }) => {
+            setImg(result.info);
+            widget.close();
+          }}
+        >
+          {({ open }) => {
+            return (
+              <div
+                className="text-xs text-gray-500 flex items-center gap-2 cursor-pointer"
+                onClick={() => open()}
+              >
+                <Image src="/upload.png" alt="" width={28} height={28} />
+                <span>Tải ảnh lên</span>
+              </div>
+            );
+          }}
+        </CldUploadWidget>
       </div>
-
+      {state.error && <span className="text-red-500">Đã có lỗi!</span>}
       <button className="bg-blue-400 text-white p-2 rounded-md">
-        {type === "create" ? "Tạo" : "Cập nhật"}
+        {type === "create" ? "Tạo mới" : "Cập nhật"}
       </button>
     </form>
   );
