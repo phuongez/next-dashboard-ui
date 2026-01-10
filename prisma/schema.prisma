@@ -39,8 +39,8 @@ model Student {
   bloodType   String
   sex         UserSex
   createdAt   DateTime     @default(now())
-  parentId    String
-  parent      Parent       @relation(fields: [parentId], references: [id])
+  parentId    String?
+  parent      Parent?      @relation(fields: [parentId], references: [id])
   classId     Int
   class       Class        @relation(fields: [classId], references: [id])
   gradeId     Int
@@ -48,6 +48,7 @@ model Student {
   attendances Attendance[]
   results     Result[]
   birthday    DateTime
+  conversations Conversation[]
 }
 
 model Teacher {
@@ -66,6 +67,7 @@ model Teacher {
   lessons   Lesson[]
   classes   Class[]
   birthday  DateTime
+  conversations Conversation[]
 }
 
 model Parent {
@@ -78,6 +80,7 @@ model Parent {
   address   String
   createdAt DateTime  @default(now())
   students  Student[]
+  conversations Conversation[]
 }
 
 model Grade {
@@ -163,14 +166,16 @@ model Result {
 }
 
 model Attendance {
-  id      Int      @id @default(autoincrement())
-  date    DateTime
-  present Boolean
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  present   Boolean
 
   studentId String
   student   Student @relation(fields: [studentId], references: [id])
   lessonId  Int
   lesson    Lesson  @relation(fields: [lessonId], references: [id])
+
+  @@unique([studentId, lessonId, date])
 }
 
 model Event {
@@ -192,6 +197,30 @@ model Announcement {
 
   classId Int?
   class   Class? @relation(fields: [classId], references: [id])
+}
+
+model Conversation {
+  id        Int      @id @default(autoincrement())
+  teacherId String
+  parentId  String
+  studentId String
+  createdAt DateTime @default(now())
+updatedAt DateTime @updatedAt 
+  teacher Teacher @relation(fields: [teacherId], references: [id])
+  parent  Parent  @relation(fields: [parentId], references: [id])
+  student Student @relation(fields: [studentId], references: [id])
+
+  messages Message[]
+}
+
+model Message {
+  id             Int      @id @default(autoincrement())
+  content        String
+  senderId       String
+  conversationId Int
+  createdAt      DateTime @default(now())
+readAt         DateTime?
+  conversation Conversation @relation(fields: [conversationId], references: [id])
 }
 
 enum UserSex {

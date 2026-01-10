@@ -3,8 +3,10 @@ import Image from "next/image";
 
 const UserCard = async ({
   type,
+  title,
 }: {
   type: "admin" | "student" | "teacher" | "parent";
+  title: string;
 }) => {
   const modelMap: Record<typeof type, any> = {
     admin: prisma.admin,
@@ -24,7 +26,7 @@ const UserCard = async ({
         <Image src="/more.png" alt="" width={20} height={20} />
       </div>
       <h1 className="text-2xl font-semibold my-4 text-white">{data}</h1>
-      <h2 className="capitalize text-sm font-medium text-white">{type}</h2>
+      <h2 className="capitalize text-sm font-medium text-white">{title}</h2>
     </div>
   );
 };

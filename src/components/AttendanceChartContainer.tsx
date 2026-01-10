@@ -32,7 +32,7 @@ const AttendanceChartContainer = async () => {
       Mon: { present: 0, absent: 0 },
       Tue: { present: 0, absent: 0 },
       Wed: { present: 0, absent: 0 },
-      Thu: { present: 10, absent: 0 },
+      Thu: { present: 10, absent: 2 },
       Fri: { present: 0, absent: 0 },
     };
 

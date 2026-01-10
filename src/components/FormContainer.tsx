@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import FormModal from "./FormModal";
 import { auth } from "@clerk/nextjs/server";
+import { StudentScalarFieldEnum } from "@/generated/prisma/internal/prismaNamespace";
+import { Prisma } from "@/generated/prisma/client";
 
 export type FormContainerProps = {
   table:
@@ -18,7 +20,7 @@ export type FormContainerProps = {
     | "announcement";
   type: "create" | "update" | "delete";
   data?: any;
-  id?: number | string;
+  id?: string | number;
 };
 
 const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
@@ -58,16 +60,126 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
         const studentClasses = await prisma.class.findMany({
           include: { _count: { select: { students: true } } },
         });
-        relatedData = { classes: studentClasses, grades: studentGrades };
+
+        relatedData = {
+          classes: studentClasses,
+          grades: studentGrades,
+        };
         break;
       case "exam":
         const examLessons = await prisma.lesson.findMany({
           where: {
             ...(role === "teacher" ? { teacherId: currentUserId! } : {}),
           },
-          select: { id: true, name: true },
+          select: {
+            id: true,
+            name: true,
+            class: true,
+            subject: true,
+          },
         });
         relatedData = { lessons: examLessons };
+        break;
+      case "lesson":
+        const subjects = await prisma.subject.findMany({
+          include: {
+            teachers: {
+              select: { id: true, name: true, surname: true },
+            },
+          },
+        });
+
+        const classes = await prisma.class.findMany({
+          select: { id: true, name: true },
+        });
+
+        relatedData = { subjects, classes };
+        break;
+      case "parent":
+        let whereCondition: any = {
+          parentId: null,
+        };
+
+        if (type === "update" && id) {
+          whereCondition = {
+            OR: [
+              { parentId: null },
+              { parentId: id }, // ✅ dùng id prop, KHÔNG dùng data.id
+            ],
+          };
+        }
+
+        const students = await prisma.student.findMany({
+          where: whereCondition,
+          select: {
+            id: true,
+            name: true,
+            surname: true,
+          },
+        });
+
+        relatedData = { students };
+        break;
+      case "event":
+        const classesData = await prisma.class.findMany({
+          select: { id: true, name: true },
+        });
+        relatedData = { classesData };
+        break;
+      case "result": {
+        const userId = currentUserId;
+
+        const studentsData = await prisma.student.findMany({
+          select: { id: true, name: true, surname: true },
+        });
+
+        let examWhere: Prisma.ExamWhereInput | undefined = undefined;
+        let assignmentWhere: Prisma.AssignmentWhereInput | undefined =
+          undefined;
+
+        if (role === "teacher" && userId) {
+          examWhere = {
+            lesson: {
+              teacherId: userId,
+            },
+          };
+
+          assignmentWhere = {
+            lesson: {
+              teacherId: userId,
+            },
+          };
+        }
+
+        const exams = await prisma.exam.findMany({
+          where: examWhere,
+          select: {
+            id: true,
+            title: true,
+            startTime: true,
+            lesson: { select: { class: true } },
+          },
+        });
+
+        const assignments = await prisma.assignment.findMany({
+          where: assignmentWhere,
+          select: {
+            id: true,
+            title: true,
+            startDate: true,
+            lesson: { select: { class: true } },
+          },
+        });
+
+        relatedData = { studentsData, exams, assignments };
+        break;
+      }
+
+      case "announcement":
+        const classesAnnouncement = await prisma.class.findMany({
+          select: { id: true, name: true },
+        });
+        relatedData = { classesAnnouncement };
         break;
 
       default:

@@ -62,7 +62,7 @@ const SubjectForm = ({
         {type === "create" ? "Tạo môn học mới" : "Điều chỉnh môn học"}
       </h1>
 
-      <div className="flex justify-between flex-wrap gap-4">
+      <div className="flex flex-wrap gap-4">
         <InputField
           label="Tên môn học"
           name="name"
@@ -80,7 +80,7 @@ const SubjectForm = ({
             hidden
           />
         )}
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
+        <div className="flex flex-col gap-2 w-full md:w-1/3">
           <label className="text-xs text-gray-500">Giáo viên</label>
           <select
             multiple
@@ -104,8 +104,8 @@ const SubjectForm = ({
         </div>
       </div>
       {state.error && <span className="text-red-500">Đã có lỗi!</span>}
-      <button className="bg-blue-400 text-white p-2 rounded-md">
-        {type === "create" ? "Create" : "Update"}
+      <button className="bg-lamaYellow text-white p-2 rounded-md">
+        {type === "create" ? "Tạo mới" : "Cập nhật"}
       </button>
     </form>
   );

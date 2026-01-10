@@ -15,63 +15,63 @@ import { RechartsDevtools } from "@recharts/devtools";
 const data = [
   {
     name: "Thg 1",
-    income: 4000,
-    expense: 2400,
+    expense: 4000,
+    income: 2400,
   },
   {
     name: "Thg 2",
-    income: 3000,
-    expense: 1398,
+    expense: 3000,
+    income: 1398,
   },
   {
     name: "Thg 3",
-    income: 2000,
-    expense: 9800,
+    expense: 2000,
+    income: 9800,
   },
   {
     name: "Thg 4",
-    income: 2780,
-    expense: 3908,
+    expense: 2780,
+    income: 3908,
   },
   {
     name: "Thg 5",
-    income: 1890,
-    expense: 4800,
+    expense: 1890,
+    income: 4800,
   },
   {
     name: "Thg 6",
-    income: 2390,
-    expense: 3800,
+    expense: 2390,
+    income: 3800,
   },
   {
     name: "Thg 7",
-    income: 3490,
-    expense: 4300,
+    expense: 3490,
+    income: 4300,
   },
   {
     name: "Thg 8",
-    income: 2000,
-    expense: 9800,
+    expense: 2000,
+    income: 9800,
   },
   {
     name: "Thg 9",
-    income: 2780,
-    expense: 3908,
+    expense: 2780,
+    income: 3908,
   },
   {
     name: "Thg 10",
-    income: 1890,
-    expense: 4800,
+    expense: 1890,
+    income: 4800,
   },
   {
     name: "Thg 11",
-    income: 2390,
-    expense: 3800,
+    expense: 2390,
+    income: 3800,
   },
   {
     name: "Thg 12",
-    income: 3490,
-    expense: 4300,
+    expense: 3490,
+    income: 4300,
   },
 ];
 
@@ -129,7 +129,7 @@ const FinanceChart = () => {
         <Line
           type="monotone"
           dataKey="income"
-          stroke="#6FC28D"
+          stroke="#4A628A"
           strokeWidth={5}
         />
         <RechartsDevtools />

@@ -15,7 +15,13 @@ import {
   updateClass,
   updateSubject,
 } from "@/lib/actions";
-import { Dispatch, SetStateAction, useActionState, useEffect } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  startTransition,
+  useActionState,
+  useEffect,
+} from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
@@ -50,7 +56,9 @@ const ClassForm = ({
 
   const onSubmit = handleSubmit((data) => {
     console.log(data);
-    formAction(data);
+    startTransition(() => {
+      formAction(data);
+    });
   });
 
   const router = useRouter();
@@ -145,11 +153,9 @@ const ClassForm = ({
           )}
         </div>
       </div>
-      {state.error && (
-        <span className="text-red-500">Something went wrong!</span>
-      )}
-      <button className="bg-blue-400 text-white p-2 rounded-md">
-        {type === "create" ? "Create" : "Update"}
+      {state.error && <span className="text-red-500">Đã có lỗi!</span>}
+      <button className="bg-[#4A628A] hover:bg-[#DCE4F0] text-white p-2 rounded-md">
+        {type === "create" ? "Tạo mới" : "Cập nhật"}
       </button>
     </form>
   );

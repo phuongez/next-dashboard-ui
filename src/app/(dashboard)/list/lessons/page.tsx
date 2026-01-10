@@ -11,65 +11,91 @@ import {
 } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import { role } from "@/lib/utils";
+import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
 
 type LessonList = Lesson & { subject: Subject; class: Class; teacher: Teacher };
 
-const columns = [
-  {
-    header: "Tên môn",
-    accessor: "name",
-  },
-  {
-    header: "Lớp",
-    accessor: "class",
-    // className: "hidden md:table-cell",
-  },
-  { header: "Giáo viên", accessor: "grade", className: "hidden md:table-cell" },
-  ...(role === "admin"
-    ? [
-        {
-          header: "Actions",
-          accessor: "action",
-        },
-      ]
-    : []),
-];
-
-const renderRow = (item: LessonList) => (
-  <tr
-    key={item.id}
-    className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
-  >
-    <td className="flex items-center gap-4 p-4">{item.subject.name}</td>
-    <td className="">{item.class.name}</td>
-    <td className="hidden md:table-cell">
-      {item.teacher.name + " " + item.teacher.surname}
-    </td>
-    <td>
-      <div className="flex items-center gap-2">
-        <Link href={`/list/teachers/${item.id}`}>
-          <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
-            <Image src={"/update.png"} alt="" width={16} height={16} />
-          </button>
-        </Link>
-        {role === "admin" && (
-          <>
-            <FormContainer table="lesson" type="update" data={item} />
-            <FormContainer table="lesson" type="delete" id={item.id} />
-          </>
-        )}
-      </div>
-    </td>
-  </tr>
-);
 const LessonListPage = async ({
   searchParams,
 }: {
   searchParams: { [key: string]: string } | undefined;
 }) => {
+  const { sessionClaims } = await auth();
+  const role = (sessionClaims?.metadata as { role?: string })?.role;
+
+  const columns = [
+    {
+      header: "Tên môn",
+      accessor: "name",
+    },
+    {
+      header: "Lớp",
+      accessor: "class",
+      // className: "hidden md:table-cell",
+    },
+    {
+      header: "Giáo viên",
+      accessor: "grade",
+      className: "hidden md:table-cell",
+    },
+    {
+      header: "Ngày",
+      accessor: "day",
+      className: "hidden md:table-cell",
+    },
+    {
+      header: "Thời gian",
+      accessor: "time",
+      className: "hidden md:table-cell",
+    },
+    ...(role === "admin"
+      ? [
+          {
+            header: "Actions",
+            accessor: "action",
+          },
+        ]
+      : []),
+  ];
+
+  const renderRow = (item: LessonList) => (
+    <tr
+      key={item.id}
+      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaSkyLight"
+    >
+      <td className="flex items-center gap-4 p-4">{item.subject.name}</td>
+      <td className="">{item.class.name}</td>
+      <td className="hidden md:table-cell">
+        {item.teacher.surname + " " + item.teacher.name}
+      </td>
+      <td className="hidden md:table-cell">
+        {new Intl.DateTimeFormat("vi-VN").format(item.startTime)}
+      </td>
+      <td className="hidden md:table-cell">
+        {item.startTime.toLocaleTimeString("vi-VN", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}{" "}
+        -{" "}
+        {item.endTime.toLocaleTimeString("vi-VN", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}
+      </td>
+      <td>
+        <div className="flex items-center gap-2">
+          {role === "admin" && (
+            <>
+              <FormContainer table="lesson" type="update" data={item} />
+              <FormContainer table="lesson" type="delete" id={item.id} />
+            </>
+          )}
+        </div>
+      </td>
+    </tr>
+  );
   const { page, ...queryParams } = (await searchParams) || {};
 
   const p = page ? parseInt(page) : 1;
@@ -99,7 +125,7 @@ const LessonListPage = async ({
     }
   }
 
-  const [data, count] = await prisma.$transaction([
+  const [data, count] = await Promise.all([
     prisma.lesson.findMany({
       where: query,
       include: {
@@ -119,17 +145,17 @@ const LessonListPage = async ({
       {/* TOP */}
       <div className="flex items-center justify-between">
         <h1 className="hidden md:block text-lg font-semibold">
-          Tất cả buổi học
+          Tất cả tiết học
         </h1>
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           <TableSearch />
           <div className="flex items-center gap-4 self-end">
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+            {/* <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#F2D25C]">
               <Image src={"/filter.png"} alt="" width={14} height={14} />
             </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#F2D25C]">
               <Image src={"/sort.png"} alt="" width={14} height={14} />
-            </button>
+            </button> */}
             {role === "admin" && <FormContainer table="lesson" type="create" />}
           </div>
         </div>

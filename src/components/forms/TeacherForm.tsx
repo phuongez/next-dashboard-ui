@@ -7,6 +7,7 @@ import Image from "next/image";
 import {
   Dispatch,
   SetStateAction,
+  startTransition,
   useActionState,
   useEffect,
   useState,
@@ -47,9 +48,17 @@ const TeacherForm = ({
     }
   );
 
-  const onSubmit = handleSubmit((data) => {
-    console.log(data);
-    formAction({ ...data, img: img?.secure_url });
+  const onSubmit = handleSubmit((formData) => {
+    startTransition(() => {
+      formAction({
+        ...formData,
+        subjects:
+          formData.subjects && formData.subjects.length > 0
+            ? formData.subjects
+            : data?.subjects?.map((s: any) => s.id),
+        img: img?.secure_url ?? data?.img,
+      });
+    });
   });
 
   const router = useRouter();
@@ -175,7 +184,7 @@ const TeacherForm = ({
             multiple
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
             {...register("subjects")}
-            defaultValue={data?.subjects}
+            defaultValue={data?.subjects?.map((s: any) => s.id)}
           >
             {subjects.map((subject: { id: number; name: string }) => (
               <option value={subject.id} key={subject.id}>

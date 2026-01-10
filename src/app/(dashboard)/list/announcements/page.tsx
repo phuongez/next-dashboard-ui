@@ -1,3 +1,4 @@
+//app/(dashboard)/list/announcements/page.tsx
 import FormContainer from "@/components/FormContainer";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
@@ -5,7 +6,6 @@ import TableSearch from "@/components/TableSearch";
 import { Announcement, Class, Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import { currentUserId, role } from "@/lib/utils";
 import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,9 +19,12 @@ const AnnouncementListPage = async ({
 }: {
   searchParams: { [key: string]: string } | undefined;
 }) => {
+  const { userId, sessionClaims } = await auth();
+  const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const currentUserId = userId;
   const columns = [
     {
-      header: "Tên sự kiện",
+      header: "Tên thông báo",
       accessor: "title",
     },
     {
@@ -47,7 +50,7 @@ const AnnouncementListPage = async ({
   const renderRow = (item: AnnouncementList) => (
     <tr
       key={item.id}
-      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
+      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaSkyLight"
     >
       <td className="flex items-center gap-4 p-4">{item.title}</td>
       <td className="">{item.class?.name || "-"}</td>
@@ -95,23 +98,22 @@ const AnnouncementListPage = async ({
 
   // ROLE CONDITIONS
 
-  const roleConditions = {
-    teacher: { lessons: { some: { teacherId: currentUserId! } } },
-    student: { students: { some: { id: currentUserId! } } },
-    parent: { students: { some: { parentId: currentUserId! } } },
-  };
+  if (role !== "admin") {
+    const roleConditions = {
+      teacher: { lessons: { some: { teacherId: currentUserId! } } },
+      student: { students: { some: { id: currentUserId! } } },
+      parent: { students: { some: { parentId: currentUserId! } } },
+    };
 
-  query.OR = [
-    { classId: null },
-    {
-      // class: roleConditions[role as keyof typeof roleConditions] || {},
-      class: roleConditions[role as keyof typeof roleConditions] || {},
-    },
-  ];
+    query.OR = [
+      { classId: null },
+      {
+        class: roleConditions[role as keyof typeof roleConditions],
+      },
+    ];
+  }
 
-  console.log(query);
-
-  const [data, count] = await prisma.$transaction([
+  const [data, count] = await Promise.all([
     prisma.announcement.findMany({
       where: query,
       include: {
@@ -128,21 +130,19 @@ const AnnouncementListPage = async ({
       {/* TOP */}
       <div className="flex items-center justify-between">
         <h1 className="hidden md:block text-lg font-semibold">
-          Tất cả sự kiện
+          Tất cả thông báo
         </h1>
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           <TableSearch />
           <div className="flex items-center gap-4 self-end">
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+            {/* <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
               <Image src={"/filter.png"} alt="" width={14} height={14} />
             </button>
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
               <Image src={"/sort.png"} alt="" width={14} height={14} />
-            </button>
+            </button> */}
             {role === "admin" && (
-              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-                <Image src={"/create.png"} alt="" width={14} height={14} />
-              </button>
+              <FormContainer table="announcement" type="create" />
             )}
           </div>
         </div>

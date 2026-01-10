@@ -87,3 +87,78 @@ export const examSchema = z.object({
 });
 
 export type ExamSchema = z.infer<typeof examSchema>;
+
+export const lessonSchema = z.object({
+  id: z.coerce.number().optional(),
+  name: z.string().min(1, { message: "Title name is required!" }),
+  day: z.enum(["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"], {
+    message: "Day is required!",
+  }),
+
+  startTime: z.string().min(1, { message: "Start time is required!" }),
+  endTime: z.string().min(1, { message: "End time is required!" }),
+  subjectId: z.coerce.number({ message: "Subject is required!" }),
+  classId: z.coerce.number({ message: "Class is required!" }),
+  teacherId: z.string().min(1, { message: "Teacher Id is required!" }),
+});
+
+export type LessonSchema = z.infer<typeof examSchema>;
+
+export const parentSchema = z.object({
+  id: z.coerce.number().optional(),
+  username: z.string().min(1, "Username is required"),
+  password: z.string().min(6, "Password is required"),
+  name: z.string().min(1, "Name is required"),
+  surname: z.string().min(1, "Surname is required"),
+  email: z.string().email().optional().or(z.literal("")),
+  phone: z.string().min(1, "Phone is required"),
+  address: z.string().min(1, "Address is required"),
+  students: z.array(z.string()).optional(),
+});
+
+export type ParentSchema = z.infer<typeof parentSchema>;
+
+export const eventSchema = z.object({
+  id: z.coerce.number().optional(),
+
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+
+  startTime: z.string().min(1, "Start time is required"),
+  endTime: z.string().min(1, "End time is required"),
+
+  classId: z.coerce.number().optional(),
+});
+
+export type EventSchema = z.infer<typeof eventSchema>;
+
+export const resultSchema = z
+  .object({
+    id: z.coerce.number().optional(),
+
+    score: z.coerce.number().min(0, "Score >= 0").max(10, "Score <= 10"),
+
+    studentId: z.string().min(1, "Student is required"),
+
+    examId: z.coerce.number().optional(),
+    assignmentId: z.coerce.number().optional(),
+  })
+  .refine((data) => data.examId || data.assignmentId, {
+    message: "Result must belong to exam or assignment",
+    path: ["examId"],
+  });
+
+export type ResultSchema = z.infer<typeof resultSchema>;
+
+export const announcementSchema = z.object({
+  id: z.coerce.number().optional(),
+
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+
+  date: z.string().min(1, "Date is required"),
+
+  classId: z.coerce.number().optional(),
+});
+
+export type AnnouncementSchema = z.infer<typeof announcementSchema>;

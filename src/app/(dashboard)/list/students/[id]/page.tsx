@@ -51,14 +51,14 @@ const SingleStudentPage = async ({ params }: { params: any }) => {
             <div className="w-2/3 flex flex-col justify-between gap-4">
               <div className="flex items-center gap-4">
                 <h1 className="text-xl font-semibold">
-                  {student.name + " " + student.surname}
+                  {student.surname + " " + student.name}
                 </h1>
                 {role === "admin" && (
                   <FormContainer table="student" type="update" data={student} />
                 )}
               </div>
               <p className="text-sm text-gray-500">
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+                Học sinh vinh dự của trường THCS Trí Đức.
               </p>
               <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
@@ -108,9 +108,9 @@ const SingleStudentPage = async ({ params }: { params: any }) => {
               />
               <div className="">
                 <h1 className="text-xl font-semibold">
-                  {student.class.name.charAt(0)}th
+                  {student.class.name.charAt(0)}
                 </h1>
-                <span className="text-sm text-gray-400">Grade</span>
+                <span className="text-sm text-gray-400">Cấp</span>
               </div>
             </div>
             {/* CARD */}
@@ -126,7 +126,7 @@ const SingleStudentPage = async ({ params }: { params: any }) => {
                 <h1 className="text-xl font-semibold">
                   {student.class._count.lessons}
                 </h1>
-                <span className="text-sm text-gray-400">Lessons</span>
+                <span className="text-sm text-gray-400">Buổi học</span>
               </div>
             </div>
             {/* CARD */}
@@ -140,51 +140,51 @@ const SingleStudentPage = async ({ params }: { params: any }) => {
               />
               <div className="">
                 <h1 className="text-xl font-semibold">{student.class.name}</h1>
-                <span className="text-sm text-gray-400">Class</span>
+                <span className="text-sm text-gray-400">Lớp học</span>
               </div>
             </div>
           </div>
         </div>
         {/* BOTTOM */}
         <div className="mt-4 bg-white rounded-md p-4 h-[800px]">
-          <h1>Student&apos;s Schedule</h1>
+          <h1 className="text-xl font-semibold">Lịch của học sinh</h1>
           <BigCalendarContainer type="classId" id={student.class.id} />
         </div>
       </div>
       {/* RIGHT */}
       <div className="w-full xl:w-1/3 flex flex-col gap-4">
         <div className="bg-white p-4 rounded-md">
-          <h1 className="text-xl font-semibold">Shortcuts</h1>
+          <h1 className="text-xl font-semibold">Lối tắt</h1>
           <div className="mt-4 flex gap-4 flex-wrap text-xs text-gray-500">
             <Link
               className="p-3 rounded-md bg-lamaSkyLight"
               href={`/list/lessons?classId=${student.class.id}`}
             >
-              Student&apos;s Lessons
+              Buổi học
             </Link>
             <Link
               className="p-3 rounded-md bg-lamaPurpleLight"
               href={`/list/teachers?classId=${student.class.id}`}
             >
-              Student&apos;s Teachers
+              Giáo viên
             </Link>
             <Link
               className="p-3 rounded-md bg-pink-50"
               href={`/list/exams?classId=${student.class.id}`}
             >
-              Student&apos;s Exams
+              Bài kiểm tra
             </Link>
             <Link
               className="p-3 rounded-md bg-lamaSkyLight"
               href={`/list/assignments?classId=${student.class.id}`}
             >
-              Student&apos;s Assignments
+              Bài luận
             </Link>
             <Link
               className="p-3 rounded-md bg-lamaYellowLight"
               href={`/list/results?studentId=${student.id}`}
             >
-              Student&apos;s Results
+              Điểm số
             </Link>
           </div>
         </div>
