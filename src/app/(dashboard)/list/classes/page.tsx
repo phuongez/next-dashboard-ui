@@ -3,7 +3,7 @@ import FormContainer from "@/components/FormContainer";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import { Class, Prisma, Teacher } from "@/generated/prisma/client";
+import { Class, Prisma, Student, Teacher } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
@@ -12,6 +12,7 @@ import Link from "next/link";
 
 type ClassList = Class & {
   supervisor: Teacher;
+  students: Student[];
 };
 
 const ClassListPage = async ({
