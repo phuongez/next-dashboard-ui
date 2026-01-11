@@ -11,6 +11,7 @@ import {
   deleteEvent,
   deleteResult,
   deleteAnnouncement,
+  CurrentState,
 } from "@/lib/actions";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -26,13 +27,17 @@ import { useFormState } from "react-dom";
 import { toast } from "react-toastify";
 import { FormContainerProps } from "./FormContainer";
 
-const deleteActionMap = {
+type DeleteAction = (
+  state: CurrentState,
+  formData: FormData
+) => Promise<CurrentState>;
+
+const deleteActionMap: Record<string, DeleteAction> = {
   subject: deleteSubject,
   class: deleteClass,
   teacher: deleteTeacher,
   student: deleteStudent,
   exam: deleteExam,
-  // TODO: OTHER DELETE ACTIONS
   parent: deleteParent,
   lesson: deleteLesson,
   assignment: deleteSubject,

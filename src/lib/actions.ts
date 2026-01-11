@@ -12,13 +12,13 @@ import {
 import { prisma } from "./prisma";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 
-type CurrentState = { success: boolean; error: boolean };
+export type CurrentState = { success: boolean; error?: boolean };
 const client = await clerkClient();
 
 export const createSubject = async (
   currentState: CurrentState,
   data: SubjectSchema
-) => {
+): Promise<CurrentState> => {
   try {
     await prisma.subject.create({
       data: {
@@ -469,7 +469,10 @@ export const deleteExam = async (
   }
 };
 
-export const createLesson = async (prevState: any, formData: FormData) => {
+export const createLesson = async (
+  currentState: CurrentState,
+  formData: FormData
+) => {
   try {
     await prisma.lesson.create({
       data: {
@@ -483,13 +486,16 @@ export const createLesson = async (prevState: any, formData: FormData) => {
       },
     });
 
-    return { success: true };
+    return { success: true, error: false };
   } catch (error) {
     return { success: false, error: true };
   }
 };
 
-export const updateLesson = async (prevState: any, formData: FormData) => {
+export const updateLesson = async (
+  currentState: CurrentState,
+  formData: FormData
+) => {
   try {
     await prisma.lesson.update({
       where: {
@@ -506,13 +512,16 @@ export const updateLesson = async (prevState: any, formData: FormData) => {
       },
     });
 
-    return { success: true };
+    return { success: true, error: false };
   } catch {
     return { success: false, error: true };
   }
 };
 
-export const deleteLesson = async (formData: FormData) => {
+export const deleteLesson = async (
+  currentState: CurrentState,
+  formData: FormData
+) => {
   try {
     await prisma.lesson.delete({
       where: {
@@ -520,13 +529,13 @@ export const deleteLesson = async (formData: FormData) => {
       },
     });
 
-    return { success: true };
+    return { success: true, error: false };
   } catch {
     return { success: false, error: true };
   }
 };
 
-export const createParent = async (prev: any, data: any) => {
+export const createParent = async (currentState: CurrentState, data: any) => {
   try {
     // 1️⃣ Tạo user trên Clerk
     const user = await client.users.createUser({
@@ -555,14 +564,14 @@ export const createParent = async (prev: any, data: any) => {
       },
     });
 
-    return { success: true };
+    return { success: true, error: false };
   } catch (error) {
     console.error(error);
     return { success: false, error: true };
   }
 };
 
-export const updateParent = async (prev: any, data: any) => {
+export const updateParent = async (currentState: CurrentState, data: any) => {
   try {
     const { id, students, password, ...rest } = data;
 
@@ -601,26 +610,29 @@ export const updateParent = async (prev: any, data: any) => {
       },
     });
 
-    return { success: true };
+    return { success: true, error: false };
   } catch (error) {
     console.error(error);
     return { success: false, error: true };
   }
 };
 
-export const deleteParent = async (formData: FormData) => {
+export const deleteParent = async (
+  currentState: CurrentState,
+  formData: FormData
+) => {
   const id = formData.get("id") as string;
 
   try {
     await prisma.parent.delete({ where: { id } });
     await client.users.deleteUser(id);
-    return { success: true };
+    return { success: true, error: false };
   } catch {
     return { success: false, error: true };
   }
 };
 
-export const createEvent = async (prev: any, data: any) => {
+export const createEvent = async (currentState: CurrentState, data: any) => {
   try {
     await prisma.event.create({
       data: {
@@ -632,14 +644,14 @@ export const createEvent = async (prev: any, data: any) => {
       },
     });
 
-    return { success: true };
+    return { success: true, error: false };
   } catch (e) {
     console.error(e);
     return { success: false, error: true };
   }
 };
 
-export const updateEvent = async (prev: any, data: any) => {
+export const updateEvent = async (currentState: CurrentState, data: any) => {
   try {
     const { id, ...rest } = data;
 
@@ -654,14 +666,17 @@ export const updateEvent = async (prev: any, data: any) => {
       },
     });
 
-    return { success: true };
+    return { success: true, error: false };
   } catch (e) {
     console.error(e);
     return { success: false, error: true };
   }
 };
 
-export const deleteEvent = async (formData: FormData) => {
+export const deleteEvent = async (
+  currentState: CurrentState,
+  formData: FormData
+) => {
   try {
     await prisma.event.delete({
       where: {
@@ -669,13 +684,13 @@ export const deleteEvent = async (formData: FormData) => {
       },
     });
 
-    return { success: true };
+    return { success: true, error: false };
   } catch {
     return { success: false, error: true };
   }
 };
 
-export const createResult = async (prev: any, data: any) => {
+export const createResult = async (currentState: CurrentState, data: any) => {
   const lesson = data.examId
     ? await prisma.exam.findUnique({
         where: { id: data.examId },
@@ -716,13 +731,13 @@ export const createResult = async (prev: any, data: any) => {
         assignmentId: data.assignmentId || null,
       },
     });
-    return { success: true };
+    return { success: true, error: false };
   } catch {
     return { success: false, error: true };
   }
 };
 
-export const updateResult = async (prev: any, data: any) => {
+export const updateResult = async (currentState: CurrentState, data: any) => {
   try {
     const { id, ...rest } = data;
 
@@ -736,18 +751,21 @@ export const updateResult = async (prev: any, data: any) => {
       },
     });
 
-    return { success: true };
+    return { success: true, error: false };
   } catch {
     return { success: false, error: true };
   }
 };
 
-export const deleteResult = async (formData: FormData) => {
+export const deleteResult = async (
+  currentState: CurrentState,
+  formData: FormData
+) => {
   try {
     await prisma.result.delete({
       where: { id: Number(formData.get("id")) },
     });
-    return { success: true };
+    return { success: true, error: false };
   } catch {
     return { success: false, error: true };
   }
@@ -806,7 +824,10 @@ export const getStudentsByAssessment = async (
   return assignment?.lesson.class.students ?? [];
 };
 
-export const createAnnouncement = async (prev: any, data: any) => {
+export const createAnnouncement = async (
+  currentState: CurrentState,
+  data: any
+) => {
   try {
     await prisma.announcement.create({
       data: {
@@ -816,14 +837,17 @@ export const createAnnouncement = async (prev: any, data: any) => {
         classId: data.classId || null,
       },
     });
-    return { success: true };
+    return { success: true, error: false };
   } catch (e) {
     console.error(e);
     return { success: false, error: true };
   }
 };
 
-export const updateAnnouncement = async (prev: any, data: any) => {
+export const updateAnnouncement = async (
+  currentState: CurrentState,
+  data: any
+) => {
   try {
     const { id, ...rest } = data;
 
@@ -836,19 +860,22 @@ export const updateAnnouncement = async (prev: any, data: any) => {
         classId: rest.classId || null,
       },
     });
-    return { success: true };
+    return { success: true, error: false };
   } catch (e) {
     console.error(e);
     return { success: false, error: true };
   }
 };
 
-export const deleteAnnouncement = async (formData: FormData) => {
+export const deleteAnnouncement = async (
+  currentState: CurrentState,
+  formData: FormData
+) => {
   try {
     await prisma.announcement.delete({
       where: { id: Number(formData.get("id")) },
     });
-    return { success: true };
+    return { success: true, error: false };
   } catch {
     return { success: false, error: true };
   }
