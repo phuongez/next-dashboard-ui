@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
 const Navbar = async () => {
   const user = await currentUser();
   const pageRole = user?.publicMetadata.role as string;
-  const prismaUser =
+  const prismaUser: any =
     pageRole === "teacher"
       ? await prisma.teacher.findUnique({
           where: {
