@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { getOrCreateConversation } from "@/lib/actions";
 
 type Props = {
-  teacherId: string;
+  teacherId: string | null;
   parentId: string;
   studentId: string;
 };

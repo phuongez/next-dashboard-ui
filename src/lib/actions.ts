@@ -905,10 +905,13 @@ export const getOrCreateConversation = async ({
   parentId,
   studentId,
 }: {
-  teacherId: string;
+  teacherId: string | null;
   parentId: string;
   studentId: string;
 }) => {
+  if (!teacherId) {
+    return null;
+  }
   let conversation = await prisma.conversation.findFirst({
     where: { teacherId, parentId, studentId },
   });
