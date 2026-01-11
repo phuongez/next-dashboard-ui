@@ -13,11 +13,12 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
-import { announcementSchema } from "@/lib/formValidationSchemas";
+import {
+  AnnouncementSchema,
+  announcementSchema,
+} from "@/lib/formValidationSchemas";
 import { createAnnouncement, updateAnnouncement } from "@/lib/actions";
 import InputField from "../InputField";
-
-type AnnouncementFormValues = z.infer<typeof announcementSchema>;
 
 type Props = {
   type: "create" | "update";
@@ -38,7 +39,7 @@ const AnnouncementForm = ({ type, data, setOpen, relatedData }: Props) => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<AnnouncementFormValues>({
+  } = useForm<AnnouncementSchema>({
     resolver: zodResolver(announcementSchema),
     defaultValues:
       type === "update" && data

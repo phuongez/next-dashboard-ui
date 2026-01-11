@@ -151,14 +151,14 @@ export const resultSchema = z
 export type ResultSchema = z.infer<typeof resultSchema>;
 
 export const announcementSchema = z.object({
-  id: z.coerce.number().optional(),
+  id: z.coerce.number<string>(),
 
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
 
   date: z.string().min(1, "Date is required"),
 
-  classId: z.coerce.number().optional(),
+  classId: z.coerce.number<string>().optional(),
 });
 
 export type AnnouncementSchema = z.infer<typeof announcementSchema>;
