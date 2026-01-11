@@ -6,7 +6,7 @@ import { getOrCreateConversation } from "@/lib/actions";
 
 type Props = {
   teacherId: string | null;
-  parentId: string;
+  parentId: string | null;
   studentId: string;
 };
 
