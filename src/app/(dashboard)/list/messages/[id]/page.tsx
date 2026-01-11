@@ -50,8 +50,8 @@ const MessageDetailPage = async ({ params }: Props) => {
 
   const otherUserName =
     role === "teacher"
-      ? `${conversation.parent.name} ${conversation.parent.surname}`
-      : `${conversation.teacher.name} ${conversation.teacher.surname}`;
+      ? `${conversation.parent.surname} ${conversation.parent.name}`
+      : `${conversation.teacher.surname} ${conversation.teacher.name}`;
 
   await markConversationAsRead(conversation.id, userId);
 
@@ -61,7 +61,7 @@ const MessageDetailPage = async ({ params }: Props) => {
       <div className="border-b p-4">
         <h1 className="font-semibold text-lg">{otherUserName}</h1>
         <p className="text-sm text-gray-500">
-          Học sinh: {conversation.student.name} {conversation.student.surname}
+          Học sinh: {conversation.student.surname} {conversation.student.name}
         </p>
       </div>
 
@@ -75,7 +75,7 @@ const MessageDetailPage = async ({ params }: Props) => {
               key={msg.id}
               className={`max-w-[70%] px-4 py-2 rounded-md text-sm ${
                 isMine
-                  ? "bg-blue-500 text-white self-end"
+                  ? "bg-lamaSky text-gray-800 self-end"
                   : "bg-gray-200 text-gray-800 self-start"
               }`}
             >

@@ -32,7 +32,7 @@ const MessageForm = ({ conversationId }: Props) => {
       />
       <button
         onClick={handleSend}
-        className="bg-blue-500 text-white px-4 rounded-md"
+        className="bg-lamaYellow text-white px-4 rounded-md"
       >
         Gửi
       </button>

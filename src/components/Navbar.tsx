@@ -3,9 +3,37 @@ import { currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
 import NavbarNotification from "./navbar/NavbarNotification";
 import NavbarMessages from "./NavbarMessages";
+import { prisma } from "@/lib/prisma";
 
 const Navbar = async () => {
   const user = await currentUser();
+  const pageRole = user?.publicMetadata.role as string;
+  const prismaUser =
+    pageRole === "teacher"
+      ? await prisma.teacher.findUnique({
+          where: {
+            id: user?.id as string,
+          },
+        })
+      : pageRole === "parent"
+      ? await prisma.parent.findUnique({
+          where: {
+            id: user?.id as string,
+          },
+        })
+      : pageRole === "student"
+      ? await prisma.student.findUnique({
+          where: {
+            id: user?.id as string,
+          },
+        })
+      : pageRole === "admin"
+      ? await prisma.admin.findUnique({
+          where: {
+            id: user?.id as string,
+          },
+        })
+      : null;
   return (
     <div className="flex items-center justify-between p-4">
       {/* SEARCH BAR */}
@@ -26,9 +54,17 @@ const Navbar = async () => {
           <NavbarNotification />
         </div>
         <div className="flex flex-col">
-          <span className="text-xs leading-3 font-medium">
-            {user?.lastName + " " + user?.firstName}
-          </span>
+          {pageRole === "admin" && (
+            <span className="text-xs leading-3 font-medium">
+              {user?.lastName + " " + user?.firstName}
+            </span>
+          )}
+          {pageRole !== "admin" && (
+            <span className="text-xs leading-3 font-medium">
+              {prismaUser?.surname + " " + prismaUser?.name}
+            </span>
+          )}
+
           <span className="text-[10px] text-gray-500 text-right">
             {user?.publicMetadata?.role as string}
           </span>
