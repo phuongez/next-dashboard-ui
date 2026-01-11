@@ -14,11 +14,13 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
 import {
-  AnnouncementSchema,
+  announcementFormSchema,
   announcementSchema,
 } from "@/lib/formValidationSchemas";
 import { createAnnouncement, updateAnnouncement } from "@/lib/actions";
 import InputField from "../InputField";
+
+type AnnouncementFormInput = z.infer<typeof announcementFormSchema>;
 
 type Props = {
   type: "create" | "update";
@@ -39,18 +41,18 @@ const AnnouncementForm = ({ type, data, setOpen, relatedData }: Props) => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<AnnouncementSchema>({
-    resolver: zodResolver(announcementSchema),
+  } = useForm<AnnouncementFormInput>({
+    resolver: zodResolver(announcementFormSchema),
     defaultValues:
       type === "update" && data
         ? {
-            id: data.id,
+            id: String(data.id), // 👈 ép string
             title: data.title,
             description: data.description,
-            classId: data.classId ?? undefined,
             date: data.date
               ? new Date(data.date).toISOString().slice(0, 10)
-              : undefined,
+              : "",
+            classId: data.classId ? String(data.classId) : undefined,
           }
         : undefined,
   });
@@ -65,13 +67,15 @@ const AnnouncementForm = ({ type, data, setOpen, relatedData }: Props) => {
 
   /* ================= SUBMIT ================= */
 
-  const onSubmit = handleSubmit((formData) => {
+  const onSubmit = handleSubmit((values) => {
+    const parsed = announcementSchema.parse({
+      ...values,
+      id: values.id ? Number(values.id) : undefined,
+      classId: values.classId ? Number(values.classId) : null,
+    });
+
     startTransition(() => {
-      formAction({
-        ...formData,
-        // không chọn lớp => toàn trường
-        classId: formData.classId || null,
-      });
+      formAction(parsed);
     });
   });
 
@@ -148,7 +152,7 @@ const AnnouncementForm = ({ type, data, setOpen, relatedData }: Props) => {
 
       {/* ===== ID (UPDATE) ===== */}
       {type === "update" && (
-        <input type="hidden" {...register("id")} value={data?.id} />
+        <input type="hidden" {...register("id")} value={String(data?.id)} />
       )}
 
       {state.error && (

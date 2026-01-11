@@ -150,15 +150,29 @@ export const resultSchema = z
 
 export type ResultSchema = z.infer<typeof resultSchema>;
 
-export const announcementSchema = z.object({
-  id: z.coerce.number<string>(),
+// export const announcementSchema = z.object({
+//   id: z.coerce.number<string>(),
 
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
+//   title: z.string().min(1, "Title is required"),
+//   description: z.string().min(1, "Description is required"),
 
-  date: z.string().min(1, "Date is required"),
+//   date: z.string().min(1, "Date is required"),
 
-  classId: z.coerce.number<string>().optional(),
+//   classId: z.coerce.number<string>().optional(),
+// });
+
+export const announcementFormSchema = z.object({
+  id: z.string().optional(),
+  title: z.string().min(1),
+  description: z.string().min(1),
+  date: z.string().min(1),
+  classId: z.string().optional(),
 });
 
-export type AnnouncementSchema = z.infer<typeof announcementSchema>;
+export const announcementSchema = announcementFormSchema.transform((v) => ({
+  ...v,
+  id: v.id ? Number(v.id) : undefined,
+  classId: v.classId ? Number(v.classId) : null,
+}));
+
+// export type AnnouncementSchema = z.infer<typeof announcementSchema>;
