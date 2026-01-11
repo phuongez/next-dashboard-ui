@@ -17,7 +17,7 @@ import { announcementSchema } from "@/lib/formValidationSchemas";
 import { createAnnouncement, updateAnnouncement } from "@/lib/actions";
 import InputField from "../InputField";
 
-type AnnouncementSchema = z.infer<typeof announcementSchema>;
+type AnnouncementFormValues = z.infer<typeof announcementSchema>;
 
 type Props = {
   type: "create" | "update";
@@ -38,13 +38,16 @@ const AnnouncementForm = ({ type, data, setOpen, relatedData }: Props) => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<AnnouncementSchema>({
+  } = useForm<AnnouncementFormValues>({
     resolver: zodResolver(announcementSchema),
     defaultValues:
-      type === "update"
+      type === "update" && data
         ? {
-            ...data,
-            date: data?.date
+            id: data.id,
+            title: data.title,
+            description: data.description,
+            classId: data.classId ?? undefined,
+            date: data.date
               ? new Date(data.date).toISOString().slice(0, 10)
               : undefined,
           }
