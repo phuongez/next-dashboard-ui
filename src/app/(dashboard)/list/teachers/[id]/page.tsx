@@ -1,6 +1,5 @@
 import Announcements from "@/components/Annoucement";
 import BigCalendarContainer from "@/components/BigCalendarContainer";
-import BigCalendar from "@/components/BigCalender";
 import FormContainer from "@/components/FormContainer";
 import Performance from "@/components/Performance";
 import { Teacher } from "@/generated/prisma/client";
