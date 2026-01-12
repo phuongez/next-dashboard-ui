@@ -3,19 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
-import {
-  examSchema,
-  ExamSchema,
-  subjectSchema,
-  SubjectSchema,
-} from "@/lib/formValidationSchemas";
-import {
-  createExam,
-  createSubject,
-  updateExam,
-  updateSubject,
-} from "@/lib/actions";
-import { useFormState } from "react-dom";
+import { examFormSchema, examSchema } from "@/lib/formValidationSchemas";
+import { createExam, updateExam } from "@/lib/actions";
 import {
   Dispatch,
   SetStateAction,
@@ -25,6 +14,9 @@ import {
 } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import z from "zod";
+
+type ExamFormInput = z.infer<typeof examFormSchema>;
 
 const ExamForm = ({
   type,
@@ -41,8 +33,8 @@ const ExamForm = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ExamSchema>({
-    resolver: zodResolver(examSchema),
+  } = useForm<ExamFormInput>({
+    resolver: zodResolver(examFormSchema),
   });
 
   // AFTER REACT 19 IT'LL BE USEACTIONSTATE
@@ -56,9 +48,9 @@ const ExamForm = ({
   );
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data);
+    const parsed = examSchema.parse(data);
     startTransition(() => {
-      formAction(data);
+      formAction(parsed);
     });
   });
 
@@ -120,20 +112,34 @@ const ExamForm = ({
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
             {...register("lessonId")}
             defaultValue={
-              lessons.find((lesson) => {
-                return lesson.id === data?.lessonId;
-              }).id
+              lessons.find(
+                (lesson: {
+                  id: number;
+                  name: string;
+                  class: any;
+                  subject: any;
+                }) => {
+                  return lesson.id === data?.lessonId;
+                }
+              ).id
             }
           >
-            {lessons.map((lesson: { id: number; name: string }) => (
-              <option value={lesson.id} key={lesson.id}>
-                {lesson.name +
-                  " - " +
-                  lesson.class.name +
-                  " - " +
-                  lesson.subject.name}
-              </option>
-            ))}
+            {lessons.map(
+              (lesson: {
+                id: number;
+                name: string;
+                class: any;
+                subject: any;
+              }) => (
+                <option value={lesson.id} key={lesson.id}>
+                  {lesson.name +
+                    " - " +
+                    lesson.class.name +
+                    " - " +
+                    lesson.subject.name}
+                </option>
+              )
+            )}
           </select>
           {errors.lessonId?.message && (
             <p className="text-xs text-red-400">

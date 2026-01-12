@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { parentSchema, ParentSchema } from "@/lib/formValidationSchemas";
+import { parentFormSchema, parentSchema } from "@/lib/formValidationSchemas";
 import {
   Dispatch,
   SetStateAction,
@@ -14,6 +14,10 @@ import { createParent, updateParent } from "@/lib/actions";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import InputField from "../InputField";
+
+import z from "zod";
+
+type ParentFormInput = z.infer<typeof parentFormSchema>;
 
 type Props = {
   type: "create" | "update";
@@ -35,8 +39,8 @@ const ParentForm = ({ type, data, setOpen, relatedData }: Props) => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ParentSchema>({
-    resolver: zodResolver(parentSchema),
+  } = useForm<ParentFormInput>({
+    resolver: zodResolver(parentFormSchema),
     defaultValues:
       type === "update"
         ? {
@@ -57,14 +61,15 @@ const ParentForm = ({ type, data, setOpen, relatedData }: Props) => {
   /* ================= SUBMIT ================= */
 
   const onSubmit = handleSubmit((formData) => {
+    const parsed = parentSchema.parse(formData);
     startTransition(() => {
       formAction({
-        ...formData,
+        ...parsed,
 
         // 🛡️ nếu update mà không đổi students → giữ nguyên
         students:
-          formData.students && formData.students.length > 0
-            ? formData.students
+          parsed.students && parsed.students.length > 0
+            ? parsed.students
             : data?.students?.map((s: any) => s.id),
       });
     });

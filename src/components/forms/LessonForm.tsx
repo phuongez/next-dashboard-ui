@@ -1,13 +1,16 @@
 "use client";
 
-import { lessonSchema } from "@/lib/formValidationSchemas";
+import { lessonFormSchema } from "@/lib/formValidationSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { startTransition, useActionState, useEffect } from "react";
 import { createLesson, updateLesson } from "@/lib/actions";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+
+import z from "zod";
+
+type LessonFormInput = z.infer<typeof lessonFormSchema>;
 
 type Props = {
   type: "create" | "update";
@@ -49,8 +52,8 @@ const LessonForm = ({ type, data, setOpen, relatedData }: Props) => {
     setValue,
     watch,
     formState: { errors },
-  } = useForm<z.infer<typeof lessonSchema>>({
-    resolver: zodResolver(lessonSchema),
+  } = useForm<LessonFormInput>({
+    resolver: zodResolver(lessonFormSchema),
     defaultValues: data,
   });
 

@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import {
   Dispatch,
   SetStateAction,
@@ -13,18 +12,20 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
-import { eventSchema } from "@/lib/formValidationSchemas";
+import { eventFormSchema, eventSchema } from "@/lib/formValidationSchemas";
 import { createEvent, updateEvent } from "@/lib/actions";
 import InputField from "../InputField";
 
-type EventSchema = z.infer<typeof eventSchema>;
+import z from "zod";
+
+type EventFormInput = z.infer<typeof eventFormSchema>;
 
 type Props = {
   type: "create" | "update";
   data?: any;
   setOpen: Dispatch<SetStateAction<boolean>>;
   relatedData?: {
-    classes: {
+    classesData: {
       id: number;
       name: string;
     }[];
@@ -38,8 +39,8 @@ const EventForm = ({ type, data, setOpen, relatedData }: Props) => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<EventSchema>({
-    resolver: zodResolver(eventSchema),
+  } = useForm<EventFormInput>({
+    resolver: zodResolver(eventFormSchema),
     defaultValues:
       type === "update"
         ? {
@@ -65,11 +66,12 @@ const EventForm = ({ type, data, setOpen, relatedData }: Props) => {
   /* ================= SUBMIT ================= */
 
   const onSubmit = handleSubmit((formData) => {
+    const parsed = eventSchema.parse(formData);
     startTransition(() => {
       formAction({
-        ...formData,
+        ...parsed,
         // nếu không chọn lớp → event toàn trường
-        classId: formData.classId || null,
+        classId: parsed.classId || null,
       });
     });
   });

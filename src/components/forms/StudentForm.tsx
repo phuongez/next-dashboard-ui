@@ -12,12 +12,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import {
-  studentSchema,
-  StudentSchema,
-  teacherSchema,
-  TeacherSchema,
-} from "@/lib/formValidationSchemas";
+import { studentFormSchema, studentSchema } from "@/lib/formValidationSchemas";
 import { useFormState } from "react-dom";
 import {
   createStudent,
@@ -28,6 +23,10 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { CldUploadWidget } from "next-cloudinary";
+
+import z from "zod";
+
+type StudentFormInput = z.infer<typeof studentFormSchema>;
 
 const StudentForm = ({
   type,
@@ -44,8 +43,8 @@ const StudentForm = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<StudentSchema>({
-    resolver: zodResolver(studentSchema),
+  } = useForm<StudentFormInput>({
+    resolver: zodResolver(studentFormSchema),
   });
 
   const [img, setImg] = useState<any>();
@@ -59,8 +58,9 @@ const StudentForm = ({
   );
 
   const onSubmit = handleSubmit((data) => {
+    const parsed = studentSchema.parse(data);
     startTransition(() => {
-      formAction({ ...data, img: img?.secure_url });
+      formAction({ ...parsed, img: img?.secure_url });
     });
   });
 

@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+
 import {
   Dispatch,
   SetStateAction,
@@ -14,14 +14,16 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
-import { resultSchema } from "@/lib/formValidationSchemas";
+import { resultFormSchema, resultSchema } from "@/lib/formValidationSchemas";
 import {
   createResult,
   getStudentsByAssessment,
   updateResult,
 } from "@/lib/actions";
 
-type ResultSchema = z.infer<typeof resultSchema>;
+import z from "zod";
+
+type ResultFormInput = z.infer<typeof resultFormSchema>;
 
 type Props = {
   type: "create" | "update";
@@ -56,8 +58,8 @@ const ResultForm = ({ type, data, setOpen, relatedData }: Props) => {
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<ResultSchema>({
-    resolver: zodResolver(resultSchema),
+  } = useForm<ResultFormInput>({
+    resolver: zodResolver(resultFormSchema),
     defaultValues:
       type === "update"
         ? {
@@ -107,11 +109,12 @@ const ResultForm = ({ type, data, setOpen, relatedData }: Props) => {
   /* ================= SUBMIT ================= */
 
   const onSubmit = handleSubmit((formData) => {
+    const parsed = resultSchema.parse(formData);
     startTransition(() => {
       formAction({
-        ...formData,
-        examId: formData.examId || null,
-        assignmentId: formData.assignmentId || null,
+        ...parsed,
+        examId: parsed.examId || null,
+        assignmentId: parsed.assignmentId || null,
       });
     });
   });
