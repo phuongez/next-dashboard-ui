@@ -12,12 +12,15 @@ import {
   useEffect,
   useState,
 } from "react";
-import { teacherSchema, TeacherSchema } from "@/lib/formValidationSchemas";
 import { useFormState } from "react-dom";
 import { createTeacher, updateTeacher } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { CldUploadWidget } from "next-cloudinary";
+import z from "zod";
+import { teacherFormSchema, teacherSchema } from "@/lib/formValidationSchemas";
+
+type TeacherFormInput = z.infer<typeof teacherFormSchema>;
 
 const TeacherForm = ({
   type,
@@ -34,8 +37,8 @@ const TeacherForm = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<TeacherSchema>({
-    resolver: zodResolver(teacherSchema),
+  } = useForm<TeacherFormInput>({
+    resolver: zodResolver(teacherFormSchema),
   });
 
   const [img, setImg] = useState<any>();
@@ -50,11 +53,12 @@ const TeacherForm = ({
 
   const onSubmit = handleSubmit((formData) => {
     startTransition(() => {
+      const parsed = teacherSchema.parse(formData);
       formAction({
-        ...formData,
+        ...parsed,
         subjects:
-          formData.subjects && formData.subjects.length > 0
-            ? formData.subjects
+          parsed.subjects && parsed.subjects.length > 0
+            ? parsed.subjects
             : data?.subjects?.map((s: any) => s.id),
         img: img?.secure_url ?? data?.img,
       });

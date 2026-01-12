@@ -14,6 +14,8 @@ export const subjectSchema = subjectFormSchema.transform((v) => ({
   teachers: v.teachers,
 }));
 
+export type SubjectSchema = z.infer<typeof subjectSchema>;
+
 /* ================= CLASS ================= */
 
 export const classFormSchema = z.object({
@@ -31,6 +33,8 @@ export const classSchema = classFormSchema.transform((v) => ({
   gradeId: Number(v.gradeId),
   supervisorId: v.supervisorId || null,
 }));
+
+export type ClassSchema = z.infer<typeof classSchema>;
 
 /* ================= TEACHER ================= */
 
@@ -54,6 +58,8 @@ export const teacherSchema = teacherFormSchema.transform((v) => ({
   ...v,
   birthday: new Date(v.birthday),
 }));
+
+export type TeacherSchema = z.infer<typeof teacherSchema>;
 
 /* ================= STUDENT ================= */
 
@@ -82,6 +88,8 @@ export const studentSchema = studentFormSchema.transform((v) => ({
   classId: Number(v.classId),
 }));
 
+export type StudentSchema = z.infer<typeof studentSchema>;
+
 /* ================= EXAM ================= */
 
 export const examFormSchema = z.object({
@@ -99,6 +107,8 @@ export const examSchema = examFormSchema.transform((v) => ({
   endTime: new Date(v.endTime),
   lessonId: Number(v.lessonId),
 }));
+
+export type ExamSchema = z.infer<typeof examSchema>;
 
 /* ================= LESSON ================= */
 
@@ -119,6 +129,8 @@ export const lessonSchema = lessonFormSchema.transform((v) => ({
   classId: Number(v.classId),
 }));
 
+export type LessonSchema = z.infer<typeof lessonSchema>;
+
 /* ================= PARENT ================= */
 
 export const parentFormSchema = z.object({
@@ -138,6 +150,8 @@ export const parentSchema = parentFormSchema.transform((v) => ({
   id: v.id ? Number(v.id) : undefined,
 }));
 
+export type ParentSchema = z.infer<typeof parentSchema>;
+
 /* ================= EVENT ================= */
 
 export const eventFormSchema = z.object({
@@ -154,6 +168,8 @@ export const eventSchema = eventFormSchema.transform((v) => ({
   id: v.id ? Number(v.id) : undefined,
   classId: v.classId ? Number(v.classId) : null,
 }));
+
+export type EventSchema = z.infer<typeof eventSchema>;
 
 /* ================= RESULT ================= */
 
@@ -178,6 +194,8 @@ export const resultSchema = resultFormSchema.transform((v) => ({
   assignmentId: v.assignmentId ? Number(v.assignmentId) : undefined,
 }));
 
+export type ResultSchema = z.infer<typeof resultSchema>;
+
 /* ================= ANNOUNCEMENT ================= */
 
 export const announcementFormSchema = z.object({
@@ -195,6 +213,8 @@ export const announcementSchema = announcementFormSchema.transform((v) => ({
   date: v.date,
   classId: v.classId ? Number(v.classId) : null,
 }));
+
+export type AnnouncementSchema = z.infer<typeof announcementSchema>;
 
 // export const subjectSchema = z.object({
 //   id: z.coerce.number().optional(),
