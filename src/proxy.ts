@@ -23,9 +23,11 @@ const matchers = Object.keys(routeAccessMap).map((route) => ({
 export default clerkMiddleware(async (auth, req) => {
   const authData = await auth();
 
-  const role = authData.sessionClaims?.publicMetadata?.role as
-    | string
-    | undefined;
+  const role = (
+    authData.sessionClaims as {
+      publicMetadata?: { role?: "admin" | "teacher" | "student" | "parent" };
+    }
+  )?.publicMetadata?.role;
   if (!role) return;
 
   const rule = matchers.find(({ matcher }) => matcher(req));
