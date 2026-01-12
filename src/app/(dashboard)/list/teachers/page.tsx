@@ -12,7 +12,6 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/generated/prisma/client";
 // import { role } from "@/lib/utils";
 import FormContainer from "@/components/FormContainer";
-import { getAuthContext } from "@/lib/auth";
 import { auth } from "@clerk/nextjs/server";
 
 const connectionString = `${process.env.DATABASE_URL}`;

@@ -10,7 +10,6 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/generated/prisma/client";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import FormContainer from "@/components/FormContainer";
-import { getAuthContext } from "@/lib/auth";
 import { auth } from "@clerk/nextjs/server";
 import StartChatButton from "@/components/StartChatButton";
 
