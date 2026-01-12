@@ -3,12 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
-import {
-  classSchema,
-  ClassSchema,
-  subjectSchema,
-  SubjectSchema,
-} from "@/lib/formValidationSchemas";
+import { classFormSchema, classSchema } from "@/lib/formValidationSchemas";
 import {
   createClass,
   createSubject,
@@ -24,6 +19,10 @@ import {
 } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import z from "zod";
+import { parse } from "path";
+
+type ClassFormInput = z.infer<typeof classFormSchema>;
 
 const ClassForm = ({
   type,
@@ -40,8 +39,8 @@ const ClassForm = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ClassSchema>({
-    resolver: zodResolver(classSchema),
+  } = useForm<ClassFormInput>({
+    resolver: zodResolver(classFormSchema),
   });
 
   // AFTER REACT 19 IT'LL BE USEACTIONSTATE
@@ -55,9 +54,9 @@ const ClassForm = ({
   );
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data);
+    const parsed = classSchema.parse(data);
     startTransition(() => {
-      formAction(data);
+      formAction(parsed);
     });
   });
 
