@@ -54,15 +54,15 @@ const menuItems = [
         href: "/list/exams",
         visible: ["admin", "teacher", "student", "parent"],
       },
-      // {
-      //   icon: "/assignment.png",
-      //   label: "Bài luận",
-      //   href: "/list/assignments",
-      //   visible: ["admin", "teacher", "student", "parent"],
-      // },
+      {
+        icon: "/assignment.png",
+        label: "Bài thi",
+        href: "/list/assignments",
+        visible: ["admin", "teacher", "student", "parent"],
+      },
       {
         icon: "/result.png",
-        label: "Kết quả",
+        label: "Điểm số",
         href: "/list/results",
         visible: ["admin", "teacher", "student", "parent"],
       },

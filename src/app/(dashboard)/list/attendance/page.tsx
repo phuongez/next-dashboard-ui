@@ -112,6 +112,11 @@ const AttendancePage = async ({
     { header: "Lớp", accessor: "class" },
     { header: "Môn", accessor: "subject" },
     {
+      header: "Ngày",
+      accessor: "day",
+      className: "hidden md:table-cell",
+    },
+    {
       header: "Thời gian",
       accessor: "time",
       className: "hidden md:table-cell",
@@ -134,6 +139,9 @@ const AttendancePage = async ({
       <td className="p-4 font-medium">{item.name}</td>
       <td>{item.className}</td>
       <td>{item.subjectName}</td>
+      <td className="hidden md:table-cell">
+        {item.startTime.toLocaleDateString("vi-VN")}
+      </td>
       <td className="hidden md:table-cell">
         {item.startTime.toLocaleTimeString("vi-VN", {
           hour: "2-digit",

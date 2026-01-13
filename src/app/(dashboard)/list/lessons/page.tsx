@@ -12,8 +12,6 @@ import {
 import { prisma } from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
-import Image from "next/image";
-import Link from "next/link";
 
 type LessonList = Lesson & { subject: Subject; class: Class; teacher: Teacher };
 
@@ -22,8 +20,9 @@ const LessonListPage = async ({
 }: {
   searchParams: { [key: string]: string } | undefined;
 }) => {
-  const { sessionClaims } = await auth();
+  const { userId, sessionClaims } = await auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const currentUserId = userId;
 
   const columns = [
     {
@@ -103,6 +102,7 @@ const LessonListPage = async ({
   // URL PARAMS CONDITION
 
   const query: Prisma.LessonWhereInput = {};
+  // query.lesson = {};
 
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
@@ -123,6 +123,37 @@ const LessonListPage = async ({
         }
       }
     }
+  }
+
+  // ROLE CONDITIONS
+
+  switch (role) {
+    case "admin":
+      break;
+    case "teacher":
+      query.teacherId = currentUserId!;
+      break;
+    // case "student":
+    //   query.lesson.class = {
+    //     students: {
+    //       some: {
+    //         id: currentUserId!,
+    //       },
+    //     },
+    //   };
+    //   break;
+    // case "parent":
+    //   query.lesson.class = {
+    //     students: {
+    //       some: {
+    //         parentId: currentUserId!,
+    //       },
+    //     },
+    //   };
+    //   break;
+
+    default:
+      break;
   }
 
   const [data, count] = await Promise.all([

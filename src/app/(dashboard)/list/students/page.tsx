@@ -166,12 +166,12 @@ const StudentListPage = async ({
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           <TableSearch />
           <div className="flex items-center gap-4 self-end">
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#F2D25C]">
+            {/* <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#F2D25C]">
               <Image src={"/filter.png"} alt="" width={14} height={14} />
             </button>
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#F2D25C]">
               <Image src={"/sort.png"} alt="" width={14} height={14} />
-            </button>
+            </button> */}
             {role === "admin" && (
               // <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
               //   <Image src={"/plus.png"} alt="" width={14} height={14} />

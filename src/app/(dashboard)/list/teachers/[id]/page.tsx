@@ -5,6 +5,7 @@ import Performance from "@/components/Performance";
 import { Teacher } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { auth, getAuth } from "@clerk/nextjs/server";
+import { CalendarRange, Droplet, MailCheck, PhoneIncoming } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -47,7 +48,7 @@ const SingleTeacherPage = async ({
         {/* TOP */}
         <div className="flex flex-col lg:flex-row gap-4">
           {/* USER INFO CARD */}
-          <div className="bg-lamaSky py-6 px-4 rounded-md flex-1 flex gap-4">
+          <div className="bg-lamaYellow py-6 px-4 rounded-md flex-1 flex gap-4">
             <div className="w-1/3">
               <Image
                 src={teacher.img || "/noAvatar.png"}
@@ -59,34 +60,39 @@ const SingleTeacherPage = async ({
             </div>
             <div className="w-2/3 flex flex-col justify-between gap-4">
               <div className="flex items-center gap-4">
-                <h1 className="text-xl font-semibold">
-                  {teacher.name + " " + teacher.surname}
+                <h1 className="text-xl font-semibold text-white">
+                  {teacher.surname + " " + teacher.name}
                 </h1>
                 {role === "admin" && (
                   <FormContainer table="teacher" type="update" data={teacher} />
                 )}
               </div>
-              <p className="text-sm text-gray-500">
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+              <p className="text-sm text-white">
+                Giáo viên đạt danh hiệu Giáo viên giỏi cấp quận. Nhận được nhiều
+                bằng khen.
               </p>
               <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
-                  <Image src="/blood.png" alt="" width={14} height={14} />
-                  <span>{teacher.bloodType}</span>
+                  {/* <Image src="/blood.png" alt="" width={14} height={14} /> */}
+                  <Droplet size={14} color="white" />
+                  <span className="text-white">{teacher.bloodType}</span>
                 </div>
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
-                  <Image src="/date.png" alt="" width={14} height={14} />
-                  <span>
+                  {/* <Image src="/date.png" alt="" width={14} height={14} /> */}
+                  <CalendarRange size={14} color="white" />
+                  <span className="text-white">
                     {new Intl.DateTimeFormat("en-GB").format(teacher.birthday)}
                   </span>
                 </div>
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
-                  <Image src="/mail.png" alt="" width={14} height={14} />
-                  <span>{teacher.email || "-"}</span>
+                  {/* <Image src="/mail.png" alt="" width={14} height={14} /> */}
+                  <MailCheck size={14} color="white" />
+                  <span className="text-white">{teacher.email || "-"}</span>
                 </div>
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
-                  <Image src="/phone.png" alt="" width={14} height={14} />
-                  <span>{teacher.phone || "-"}</span>
+                  {/* <Image src="/phone.png" alt="" width={14} height={14} /> */}
+                  <PhoneIncoming size={14} color="white" />
+                  <span className="text-white">{teacher.phone || "-"}</span>
                 </div>
               </div>
             </div>
@@ -120,7 +126,7 @@ const SingleTeacherPage = async ({
                 <h1 className="text-xl font-semibold">
                   {teacher._count.subjects}
                 </h1>
-                <span className="text-sm text-gray-400">Chuyên ngành</span>
+                <span className="text-sm text-gray-400">Bộ môn</span>
               </div>
             </div>
             {/* CARD */}
@@ -172,31 +178,31 @@ const SingleTeacherPage = async ({
               className="p-3 rounded-md bg-lamaSkyLight"
               href={`/list/classes?supervisorId=${teacher.id}`}
             >
-              Lớp học quản lí
+              Lớp học
             </Link>
             <Link
               className="p-3 rounded-md bg-lamaPurpleLight"
               href={`/list/students?teacherId=${teacher.id}`}
             >
-              Học sinh quản lí
+              Học sinh
             </Link>
             <Link
               className="p-3 rounded-md bg-lamaYellowLight"
               href={`/list/lessons?teacherId=${teacher.id}`}
             >
-              Buổi học quản lí
+              Tiết học
             </Link>
             <Link
               className="p-3 rounded-md bg-pink-50"
               href={`/list/exams?teacherId=${teacher.id}`}
             >
-              Bài thi quản lí
+              Kiểm tra
             </Link>
             <Link
               className="p-3 rounded-md bg-lamaSkyLight"
               href={`/list/assignments?teacherId=${teacher.id}`}
             >
-              Bài luận quản lí
+              Bài thi
             </Link>
           </div>
         </div>
