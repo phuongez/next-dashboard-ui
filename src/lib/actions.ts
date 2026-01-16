@@ -1,6 +1,7 @@
 "use server";
 
 import {
+  assignmentSchema,
   ClassSchema,
   ExamSchema,
   LessonSchema,
@@ -920,4 +921,71 @@ export const getOrCreateConversation = async ({
   }
 
   return conversation.id;
+};
+
+export const createAssignment = async (prev: any, rawData: unknown) => {
+  // 1️⃣ Validate + convert bằng Zod
+  const parsed = assignmentSchema.safeParse(rawData);
+
+  if (!parsed.success) {
+    console.error(parsed.error.format());
+    return { success: false, error: true };
+  }
+
+  const data = parsed.data;
+  // data.lessonId: number ✅
+  // data.startDate: Date ✅
+  // data.dueDate: Date ✅
+
+  try {
+    await prisma.assignment.create({
+      data: {
+        title: data.title,
+        startDate: data.startDate,
+        dueDate: data.dueDate,
+        lessonId: data.lessonId,
+      },
+    });
+
+    return { success: true, error: false };
+  } catch (err) {
+    console.error(err);
+    return { success: false, error: true };
+  }
+};
+
+export const updateAssignment = async (prev: any, data: any) => {
+  try {
+    const { id, ...rest } = data;
+
+    await prisma.assignment.update({
+      where: { id },
+      data: {
+        title: rest.title,
+        startDate: new Date(rest.startDate),
+        dueDate: new Date(rest.dueDate),
+        lessonId: rest.lessonId,
+      },
+    });
+
+    return { success: true, error: false };
+  } catch (e) {
+    console.error(e);
+    return { success: false, error: true };
+  }
+};
+
+export const deleteAssignment = async (
+  currentState: CurrentState,
+  formData: FormData
+) => {
+  try {
+    await prisma.assignment.delete({
+      where: { id: Number(formData.get("id")) },
+    });
+
+    return { success: true, error: false };
+  } catch {
+    return { success: false, error: true };
+  }
 };

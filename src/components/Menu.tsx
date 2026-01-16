@@ -56,7 +56,7 @@ const menuItems = [
       },
       {
         icon: "/assignment.png",
-        label: "Bài thi",
+        label: "Bài luận",
         href: "/list/assignments",
         visible: ["admin", "teacher", "student", "parent"],
       },
@@ -64,6 +64,12 @@ const menuItems = [
         icon: "/result.png",
         label: "Điểm số",
         href: "/list/results",
+        visible: ["admin", "teacher", "student", "parent"],
+      },
+      {
+        icon: "/academic.png",
+        label: "Học lực",
+        href: "/list/academic",
         visible: ["admin", "teacher", "student", "parent"],
       },
       {

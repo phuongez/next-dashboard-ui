@@ -121,7 +121,7 @@ const ExamForm = ({
                 }) => {
                   return lesson.id === data?.lessonId;
                 }
-              ).id
+              )?.id ?? ""
             }
           >
             {lessons.map(

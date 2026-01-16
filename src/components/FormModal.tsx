@@ -12,6 +12,7 @@ import {
   deleteResult,
   deleteAnnouncement,
   CurrentState,
+  deleteAssignment,
 } from "@/lib/actions";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -40,7 +41,7 @@ const deleteActionMap: Record<string, DeleteAction> = {
   exam: deleteExam,
   parent: deleteParent,
   lesson: deleteLesson,
-  assignment: deleteSubject,
+  assignment: deleteAssignment,
   result: deleteResult,
 
   attendance: deleteSubject,
@@ -77,6 +78,7 @@ const ParentForm = dynamic(() => import("./forms/ParentForm"), {
 const EventForm = dynamic(() => import("./forms/EventForm"));
 const ResultForm = dynamic(() => import("./forms/ResultForm"));
 const AnnouncementForm = dynamic(() => import("./forms/AnnouncementForm"));
+const AssignmentForm = dynamic(() => import("./forms/AssignmentForm"));
 
 // TODO: OTHER FORMS
 
@@ -162,6 +164,14 @@ const forms: {
   ),
   announcement: (setOpen, type, data, relatedData) => (
     <AnnouncementForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
+  assignment: (setOpen, type, data, relatedData) => (
+    <AssignmentForm
       type={type}
       data={data}
       setOpen={setOpen}

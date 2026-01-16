@@ -182,6 +182,31 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
         relatedData = { classesAnnouncement };
         break;
 
+      case "assignment": {
+        const userId = currentUserId;
+
+        let lessonWhere: Prisma.LessonWhereInput | undefined = undefined;
+
+        if (role === "teacher" && userId) {
+          lessonWhere = {
+            teacherId: userId,
+          };
+        }
+
+        const lessons = await prisma.lesson.findMany({
+          where: lessonWhere,
+          select: {
+            id: true,
+            name: true,
+            class: { select: { name: true } },
+            subject: { select: { name: true } },
+          },
+        });
+
+        relatedData = { lessons };
+        break;
+      }
+
       default:
         break;
     }

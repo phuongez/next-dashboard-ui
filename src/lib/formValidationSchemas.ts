@@ -1,3 +1,4 @@
+import { start } from "repl";
 import { z } from "zod";
 
 /* ================= SUBJECT ================= */
@@ -215,6 +216,29 @@ export const announcementSchema = announcementFormSchema.transform((v) => ({
 }));
 
 export type AnnouncementSchema = z.infer<typeof announcementSchema>;
+
+export const assignmentFormSchema = z.object({
+  id: z.string().optional(),
+
+  title: z.string().min(1, "Title is required"),
+
+  // input type="date" hoặc datetime-local → string
+  startDate: z.string().min(1, "Start date is required"),
+  dueDate: z.string().min(1, "Due date is required"),
+
+  lessonId: z.string().min(1, "Lesson is required"),
+});
+
+export const assignmentSchema = assignmentFormSchema.transform((v) => ({
+  id: v.id ? Number(v.id) : undefined,
+
+  title: v.title,
+
+  startDate: new Date(v.startDate),
+  dueDate: new Date(v.dueDate),
+
+  lessonId: Number(v.lessonId),
+}));
 
 // export const subjectSchema = z.object({
 //   id: z.coerce.number().optional(),

@@ -37,13 +37,17 @@ const Navbar = async () => {
   return (
     <div className="flex items-center justify-between p-4">
       {/* SEARCH BAR */}
-      <div className="hidden md:flex items-center gap-2 text-xs rounded-full ring-[1.5px] ring-gray-300 px-2">
-        <Image src="/search.png" alt="" width={14} height={14} />
+      <div className="hidden md:flex md:w-1/2 items-center px-2">
+        {/* <Image src="/search.png" alt="" width={14} height={14} />
         <input
           type="text"
           placeholder="Search..."
           className="w-[200px] p-2 bg-transparent outline-none"
-        />
+        /> */}
+        <h1 className="font-semibold">
+          Chào mừng {user?.firstName},{" "}
+          <span className="font-normal">Đến với trang quản lý lịch học</span>
+        </h1>
       </div>
       {/* ICONS AND USER */}
       <div className="flex items-center gap-6 justify-end w-full">
