@@ -157,7 +157,7 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
             id: true,
             title: true,
             startTime: true,
-            lesson: { select: { class: true } },
+            lesson: { select: { class: true, subject: true } },
           },
         });
 
@@ -167,7 +167,7 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
             id: true,
             title: true,
             startDate: true,
-            lesson: { select: { class: true } },
+            lesson: { select: { class: true, subject: true } },
           },
         });
 

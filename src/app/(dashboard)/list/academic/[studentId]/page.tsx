@@ -1,3 +1,4 @@
+//app/(dashboard)/list/academic/[studentId]/page.tsx
 import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { redirect, notFound } from "next/navigation";
@@ -22,38 +23,49 @@ const AcademicStudentDetailPage = async ({ params }: PageProps) => {
      1. KIỂM TRA QUYỀN TRUY CẬP
   ========================== */
 
-  if (role === "student") {
-    if (userId !== studentId) redirect("/");
-  }
+  if (!role) redirect("/");
 
-  if (role === "parent") {
-    const child = await prisma.student.findFirst({
-      where: {
-        id: studentId,
-        parentId: userId,
-      },
-      select: { id: true },
-    });
+  switch (role) {
+    case "admin":
+      // toàn quyền
+      break;
 
-    if (!child) redirect("/");
-  }
+    case "student":
+      if (userId !== studentId) redirect("/");
+      break;
 
-  if (role === "teacher") {
-    const canAccess = await prisma.student.findFirst({
-      where: {
-        id: studentId,
-        class: {
-          lessons: {
-            some: {
-              teacherId: userId,
+    case "parent": {
+      const child = await prisma.student.findFirst({
+        where: {
+          id: studentId,
+          parentId: userId,
+        },
+        select: { id: true },
+      });
+      if (!child) redirect("/");
+      break;
+    }
+
+    case "teacher": {
+      const canAccess = await prisma.student.findFirst({
+        where: {
+          id: studentId,
+          class: {
+            lessons: {
+              some: {
+                teacherId: userId,
+              },
             },
           },
         },
-      },
-      select: { id: true },
-    });
+        select: { id: true },
+      });
+      if (!canAccess) redirect("/");
+      break;
+    }
 
-    if (!canAccess) redirect("/");
+    default:
+      redirect("/");
   }
 
   /* =========================
@@ -132,9 +144,20 @@ const AcademicStudentDetailPage = async ({ params }: PageProps) => {
     const subject = assessment.lesson.subject;
     if (!subject) return;
 
-    if (!subjectMap[subject.id]) {
-      subjectMap[subject.id] = {
-        subjectId: String(subject.id),
+    // if (!subjectMap[subject.id]) {
+    //   subjectMap[subject.id] = {
+    //     subjectId: String(subject.id),
+    //     subjectName: subject.name,
+    //     examScores: [],
+    //     assignmentScores: [],
+    //   };
+    // }
+
+    const subjectKey = subject.name;
+
+    if (!subjectMap[subjectKey]) {
+      subjectMap[subjectKey] = {
+        subjectId: subjectKey,
         subjectName: subject.name,
         examScores: [],
         assignmentScores: [],

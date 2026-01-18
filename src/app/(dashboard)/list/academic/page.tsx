@@ -1,11 +1,21 @@
+//app/(dashboard)/list/academic/page.tsx
+
 import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { calculateAcademic } from "@/lib/academic";
+import TableSearch from "@/components/TableSearch";
+import { Prisma } from "@/generated/prisma/client";
 
-const AcademicPage = async () => {
+const AcademicPage = async ({
+  searchParams,
+}: {
+  searchParams?: { [key: string]: string | undefined };
+}) => {
   const { userId, sessionClaims } = await auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const params = await searchParams;
+  const search = params?.search;
 
   if (!userId || (role !== "admin" && role !== "teacher")) {
     return null;
@@ -18,17 +28,49 @@ const AcademicPage = async () => {
 
   let studentWhere: any = {};
 
-  if (role === "teacher") {
-    studentWhere = {
-      class: {
-        lessons: {
-          some: {
-            teacherId: userId,
+  const roleCondition =
+    role === "teacher"
+      ? {
+          class: {
+            lessons: {
+              some: {
+                teacherId: userId,
+              },
+            },
           },
-        },
-      },
-    };
-  }
+        }
+      : {};
+
+  const searchCondition = search
+    ? {
+        OR: [
+          {
+            name: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+          {
+            surname: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+          {
+            class: {
+              name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          },
+        ],
+      }
+    : {};
+
+  studentWhere = {
+    AND: [roleCondition, searchCondition],
+  };
 
   const students = await prisma.student.findMany({
     where: studentWhere,
@@ -36,6 +78,7 @@ const AcademicPage = async () => {
       id: true,
       name: true,
       surname: true,
+      class: true,
     },
     orderBy: { name: "asc" },
   });
@@ -97,6 +140,7 @@ const AcademicPage = async () => {
     string,
     {
       studentName: string;
+      studentClass: string;
       subjects: Record<string, SubjectBucket>;
     }
   > = {};
@@ -104,7 +148,8 @@ const AcademicPage = async () => {
   // init student
   students.forEach((s) => {
     studentMap[s.id] = {
-      studentName: `${s.name} ${s.surname}`,
+      studentName: `${s.surname} ${s.name}`,
+      studentClass: s.class.name,
       subjects: {},
     };
   });
@@ -166,6 +211,7 @@ const AcademicPage = async () => {
 
     return {
       studentId,
+      studentClass: data.studentClass,
       studentName: data.studentName,
       ...academic,
     };
@@ -177,12 +223,16 @@ const AcademicPage = async () => {
 
   return (
     <div className="bg-white p-6 m-4 rounded-md">
-      <h1 className="text-xl font-semibold mb-6">Học lực học sinh</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-xl font-semibold">Học lực học sinh</h1>
+        <TableSearch />
+      </div>
 
       <table className="w-full text-sm border-collapse">
         <thead>
           <tr className="bg-slate-100">
             <th className="p-3 text-left">Học sinh</th>
+            <th className="p-3 text-left">Lớp</th>
             <th className="p-3 text-center">Số môn</th>
             <th className="p-3 text-center">Điểm TB</th>
             <th className="p-3 text-center">Xếp loại</th>
@@ -193,6 +243,7 @@ const AcademicPage = async () => {
           {academicList.map((s) => (
             <tr key={s.studentId} className="border-b">
               <td className="p-3">{s.studentName}</td>
+              <td className="p-3">{s.studentClass}</td>
               <td className="p-3 text-center">{s.subjectCount}</td>
               <td className="p-3 text-center font-semibold">
                 {s.academicAvg ?? "—"}
@@ -200,7 +251,7 @@ const AcademicPage = async () => {
               <td className="p-3 text-center">{s.level}</td>
               <td className="p-3 text-center">
                 <Link
-                  href={`/academic/${s.studentId}`}
+                  href={`/list/results?studentId=${s.studentId}`}
                   className="text-blue-600 hover:underline"
                 >
                   Xem

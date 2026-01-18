@@ -151,6 +151,8 @@ const ResultForm = ({ type, data, setOpen, relatedData }: Props) => {
             <option key={e.id} value={e.id}>
               {e.title +
                 " - " +
+                e.lesson.subject.name +
+                " - " +
                 Intl.DateTimeFormat().format(e.startTime) +
                 " - " +
                 e.lesson.class.name}
@@ -172,6 +174,8 @@ const ResultForm = ({ type, data, setOpen, relatedData }: Props) => {
           {relatedData?.assignments?.map((a) => (
             <option key={a.id} value={a.id}>
               {a.title +
+                " - " +
+                a.lesson.subject.name +
                 " - " +
                 Intl.DateTimeFormat().format(a.startDate) +
                 " - " +

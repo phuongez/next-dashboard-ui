@@ -34,26 +34,26 @@ const StudentListPage = async ({
 
   const columns = [
     {
-      header: "Info",
+      header: "Thông tin",
       accessor: "info",
     },
     {
-      header: "Student Id",
+      header: "Id học sinh",
       accessor: "studentId",
       className: "hidden md:table-cell",
     },
     {
-      header: "Grade",
-      accessor: "grade",
+      header: "Lớp",
+      accessor: "class",
       className: "hidden md:table-cell",
     },
     {
-      header: "Phone",
+      header: "Điện thoại",
       accessor: "phone",
       className: "hidden lg:table-cell",
     },
     {
-      header: "Address",
+      header: "Địa chỉ",
       accessor: "address",
       className: "hidden lg:table-cell",
     },
@@ -86,7 +86,7 @@ const StudentListPage = async ({
         </div>
       </td>
       <td className="hidden md:table-cell">{item.username}</td>
-      <td className="hidden md:table-cell">{item.class.name[0]}</td>
+      <td className="hidden md:table-cell">{item.class.name}</td>
       <td className="hidden lg:table-cell">{item.phone}</td>
       <td className="hidden lg:table-cell">{item.address}</td>
       <td>

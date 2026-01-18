@@ -6,13 +6,11 @@ import { Prisma, Result } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
-import Image from "next/image";
-import Link from "next/link";
-import { title } from "process";
 
 type ResultList = {
   id: number;
   title: string;
+  subject: string;
   studentName: string;
   studentSurname: string;
   teacherName: string;
@@ -33,14 +31,23 @@ const ResultListPage = async ({
 
   const columns = [
     {
-      header: "Tên môn",
+      header: "Học sinh",
+      accessor: "student",
+    },
+    {
+      header: "Lớp",
+      accessor: "class",
+      className: "hidden md:table-cell",
+    },
+    {
+      header: "Tên bài",
       accessor: "title",
     },
     {
-      header: "Học sinh",
-      accessor: "student",
-      // className: "hidden md:table-cell",
+      header: "Tên môn",
+      accessor: "subject",
     },
+
     {
       header: "Điểm",
       accessor: "score",
@@ -52,11 +59,7 @@ const ResultListPage = async ({
       accessor: "teacher",
       className: "hidden md:table-cell",
     },
-    {
-      header: "Lớp",
-      accessor: "class",
-      className: "hidden md:table-cell",
-    },
+
     {
       header: "Ngày",
       accessor: "date",
@@ -77,13 +80,16 @@ const ResultListPage = async ({
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaSkyLight"
     >
-      <td className="flex items-center gap-4 p-4">{item.title}</td>
       <td>{item.studentSurname + " " + item.studentName}</td>
+      <td className="hidden md:table-cell">{item.className}</td>
+      <td className="">{item.title}</td>
+      <td className="flex items-center gap-4 p-4">{item.subject}</td>
+
       <td className="hidden md:table-cell">{item.score}</td>
       <td className="hidden md:table-cell">
         {item.teacherName + " " + item.teacherSurname}
       </td>
-      <td className="hidden md:table-cell">{item.className}</td>
+
       <td className="hidden md:table-cell">
         {new Intl.DateTimeFormat("en-US").format(item.startTime)}
       </td>
@@ -117,7 +123,12 @@ const ResultListPage = async ({
             break;
           case "search":
             query.OR = [
+              { studentId: value },
               { exam: { title: { contains: value, mode: "insensitive" } } },
+              {
+                assignment: { title: { contains: value, mode: "insensitive" } },
+              },
+
               { student: { name: { contains: value, mode: "insensitive" } } },
             ];
             break;
@@ -164,6 +175,7 @@ const ResultListPage = async ({
               select: {
                 class: { select: { name: true } },
                 teacher: { select: { name: true, surname: true } },
+                subject: { select: { name: true } },
               },
             },
           },
@@ -174,6 +186,7 @@ const ResultListPage = async ({
               select: {
                 class: { select: { name: true } },
                 teacher: { select: { name: true, surname: true } },
+                subject: { select: { name: true } },
               },
             },
           },
@@ -195,6 +208,7 @@ const ResultListPage = async ({
     return {
       id: item.id,
       title: assessment.title,
+      subject: assessment.lesson.subject.name,
       studentName: item.student.name,
       studentSurname: item.student.surname,
       teacherName: assessment.lesson.teacher.name,

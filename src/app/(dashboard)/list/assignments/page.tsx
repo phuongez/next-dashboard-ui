@@ -36,8 +36,12 @@ const AssignmentListPage = async ({
 
   const columns = [
     {
-      header: "Tên môn",
+      header: "Tên bài",
       accessor: "name",
+    },
+    {
+      header: "Tên môn",
+      accessor: "subject",
     },
     {
       header: "Lớp",
@@ -68,6 +72,7 @@ const AssignmentListPage = async ({
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaSkyLight"
     >
+      <td className="">{item.title}</td>
       <td className="flex items-center gap-4 p-4">
         {item.lesson.subject.name}
       </td>

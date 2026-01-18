@@ -60,7 +60,7 @@ const ClassListPage = async ({
       </td>
       <td className="hidden md:table-cell">{item.name[0]}</td>
       <td className="hidden md:table-cell">
-        {item.supervisor.name + " " + item.supervisor.surname}
+        {item.supervisor.surname + " " + item.supervisor.name}
       </td>
 
       <td>
@@ -91,10 +91,22 @@ const ClassListPage = async ({
             query.supervisorId = value;
             break;
           case "search":
-            query.name = {
-              contains: value,
-              mode: "insensitive",
-            };
+            query.OR = [
+              {
+                name: {
+                  contains: value,
+                  mode: "insensitive",
+                },
+              },
+              {
+                supervisor: {
+                  name: {
+                    contains: value,
+                    mode: "insensitive",
+                  },
+                },
+              },
+            ];
             break;
           default:
             break;

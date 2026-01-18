@@ -118,6 +118,7 @@ const LessonListPage = async ({
             query.OR = [
               { subject: { name: { contains: value, mode: "insensitive" } } },
               { teacher: { name: { contains: value, mode: "insensitive" } } },
+              { class: { name: { contains: value, mode: "insensitive" } } },
             ];
             break;
         }
