@@ -29,7 +29,7 @@ const TeacherListPage = async ({
 }: {
   searchParams: { [key: string]: string } | undefined;
 }) => {
-  const { sessionClaims } = await auth();
+  const { userId, sessionClaims } = await auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
 
   const columns = [
@@ -99,18 +99,20 @@ const TeacherListPage = async ({
       </td>
       <td className="hidden lg:table-cell">{item.phone}</td>
       <td className="hidden lg:table-cell">{item.address}</td>
-      <td>
-        <div className="flex items-center gap-2">
-          <Link href={`/list/teachers/${item.id}`}>
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
-              <Image src="/view.png" alt="" width={16} height={16} />
-            </button>
-          </Link>
-          {role === "admin" && (
-            <FormContainer table="teacher" type="delete" id={item.id} />
-          )}
-        </div>
-      </td>
+      {role === "admin" && (
+        <td>
+          <div className="flex items-center gap-2">
+            <Link href={`/list/teachers/${item.id}`}>
+              <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
+                <Image src="/view.png" alt="" width={16} height={16} />
+              </button>
+            </Link>
+            {role === "admin" && (
+              <FormContainer table="teacher" type="delete" id={item.id} />
+            )}
+          </div>
+        </td>
+      )}
     </tr>
   );
 
@@ -158,6 +160,26 @@ const TeacherListPage = async ({
         }
       }
     }
+  }
+
+  switch (role) {
+    case "parent":
+      query.lessons = {
+        some: {
+          class: {
+            students: {
+              some: {
+                parentId: userId!,
+              },
+            },
+          },
+        },
+      };
+      break;
+    case "admin":
+      break;
+    default:
+      break;
   }
 
   const [data, count] = await Promise.all([

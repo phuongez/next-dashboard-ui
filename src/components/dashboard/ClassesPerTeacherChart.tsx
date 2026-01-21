@@ -19,13 +19,13 @@ type Props = {
 };
 
 // const COLORS = ["#C3E3F9", "#F2D25C", "#F05A7E", "#4A628A", "#6FC28D"];
-const COLORS = ["#4A628A", "#F2D25C", "#F05A7E", "#C3E3F9"];
+const COLORS = ["#4A628A", "#F2D25C", "#F05A7E"];
 
 export default function ClassesPerTeacherChart({ data }: Props) {
   return (
     <div className="h-120 w-full">
       <ResponsiveContainer width="100%" height={600}>
-        <BarChart data={data} layout="vertical" barSize={10}>
+        <BarChart data={data} layout="vertical" barSize={5}>
           <CartesianGrid
             strokeDasharray="3 3"
             horizontal={false}

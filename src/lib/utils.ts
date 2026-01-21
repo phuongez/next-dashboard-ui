@@ -1,8 +1,4 @@
-// import { auth } from "@clerk/nextjs/server";
-
-// const { userId, sessionClaims } = await auth();
-// export const role = (sessionClaims?.metadata as { role?: string })?.role;
-// export const currentUserId = userId;
+import { prisma } from "./prisma";
 
 const getLatestMonday = (): Date => {
   const today = new Date();
@@ -13,35 +9,61 @@ const getLatestMonday = (): Date => {
   return latestMonday;
 };
 
-export const adjustScheduleToCurrentWeek = (
-  lessons: { title: string; start: Date; end: Date }[]
-): { title: string; start: Date; end: Date }[] => {
+const getClassName = async (id: string) => {
+  const classInfo = await prisma.class.findUnique({
+    where: {
+      id: parseInt(id),
+    },
+  });
+  return classInfo?.name;
+};
+
+export const adjustScheduleToCurrentWeek = async (
+  lessons: {
+    title: string;
+    classId: number;
+    start: Date;
+    end: Date;
+  }[]
+): Promise<
+  {
+    title: string;
+    className?: string;
+    start: Date;
+    end: Date;
+  }[]
+> => {
   const latestMonday = getLatestMonday();
 
-  return lessons.map((lesson) => {
-    const lessonDayOfWeek = lesson.start.getDay();
+  return Promise.all(
+    lessons.map(async (lesson) => {
+      const lessonDayOfWeek = lesson.start.getDay();
+      const daysFromMonday = lessonDayOfWeek === 0 ? 6 : lessonDayOfWeek - 1;
 
-    const daysFromMonday = lessonDayOfWeek === 0 ? 6 : lessonDayOfWeek - 1;
+      const adjustedStartDate = new Date(latestMonday);
+      adjustedStartDate.setDate(latestMonday.getDate() + daysFromMonday);
+      adjustedStartDate.setHours(
+        lesson.start.getHours(),
+        lesson.start.getMinutes(),
+        lesson.start.getSeconds()
+      );
 
-    const adjustedStartDate = new Date(latestMonday);
+      const adjustedEndDate = new Date(adjustedStartDate);
+      adjustedEndDate.setHours(
+        lesson.end.getHours(),
+        lesson.end.getMinutes(),
+        lesson.end.getSeconds()
+      );
 
-    adjustedStartDate.setDate(latestMonday.getDate() + daysFromMonday);
-    adjustedStartDate.setHours(
-      lesson.start.getHours(),
-      lesson.start.getMinutes(),
-      lesson.start.getSeconds()
-    );
-    const adjustedEndDate = new Date(adjustedStartDate);
-    adjustedEndDate.setHours(
-      lesson.end.getHours(),
-      lesson.end.getMinutes(),
-      lesson.end.getSeconds()
-    );
+      const className = await getClassName(lesson.classId.toString());
 
-    return {
-      title: lesson.title,
-      start: adjustedStartDate,
-      end: adjustedEndDate,
-    };
-  });
+      return {
+        title: lesson.title,
+        classId: lesson.classId,
+        className,
+        start: adjustedStartDate,
+        end: adjustedEndDate,
+      };
+    })
+  );
 };

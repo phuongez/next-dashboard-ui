@@ -16,7 +16,7 @@ const menuItems = [
         icon: "/teacher.png",
         label: "Giáo viên",
         href: "/list/teachers",
-        visible: ["admin", "teacher"],
+        visible: ["admin", "teacher", "parent"],
       },
       {
         icon: "/student.png",
@@ -76,7 +76,13 @@ const menuItems = [
         icon: "/attendance.png",
         label: "Điểm danh",
         href: "/list/attendance",
-        visible: ["admin", "teacher", "student", "parent"],
+        visible: ["admin", "teacher"],
+      },
+      {
+        icon: "/attendance.png",
+        label: "Điểm danh",
+        href: "/parent/attendance",
+        visible: ["parent"],
       },
       {
         icon: "/calendar.png",

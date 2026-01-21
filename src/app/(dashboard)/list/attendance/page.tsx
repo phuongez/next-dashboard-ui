@@ -77,17 +77,6 @@ const AttendancePage = async ({
     prisma.lesson.count({ where }),
   ]);
 
-  // const data: AttendanceLessonRow[] = lessons.map((l) => ({
-  //   id: l.id,
-  //   name: l.name,
-  //   day: l.day,
-  //   startTime: l.startTime,
-  //   endTime: l.endTime,
-  //   className: l.class.name,
-  //   subjectName: l.subject.name,
-  //   attendanceCount: l.attendances.length,
-  // }));
-
   const data = lessons.map((lesson) => {
     const totalStudents = lesson.class.students.length;
     const presentCount = lesson.attendances.filter((a) => a.present).length;

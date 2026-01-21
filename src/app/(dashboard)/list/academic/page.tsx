@@ -91,16 +91,9 @@ const AcademicPage = async ({
      2. LẤY TOÀN BỘ RESULT LIÊN QUAN
      exam/assignment → lesson → subject
   ====================================================== */
-
   const results = await prisma.result.findMany({
     where: {
       studentId: { in: students.map((s) => s.id) },
-      ...(role === "teacher" && {
-        OR: [
-          { exam: { lesson: { teacherId: userId } } },
-          { assignment: { lesson: { teacherId: userId } } },
-        ],
-      }),
     },
     include: {
       exam: {
@@ -123,6 +116,38 @@ const AcademicPage = async ({
       },
     },
   });
+
+  // const results = await prisma.result.findMany({
+  //   where: {
+  //     studentId: { in: students.map((s) => s.id) },
+  //     ...(role === "teacher" && {
+  //       OR: [
+  //         { exam: { lesson: { teacherId: userId } } },
+  //         { assignment: { lesson: { teacherId: userId } } },
+  //       ],
+  //     }),
+  //   },
+  //   include: {
+  //     exam: {
+  //       include: {
+  //         lesson: {
+  //           include: {
+  //             subject: true,
+  //           },
+  //         },
+  //       },
+  //     },
+  //     assignment: {
+  //       include: {
+  //         lesson: {
+  //           include: {
+  //             subject: true,
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  // });
 
   /* ======================================================
      3. BUILD MAP: student → subject (LOGIC)

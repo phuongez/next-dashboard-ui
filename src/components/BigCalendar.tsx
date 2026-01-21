@@ -25,7 +25,13 @@ const localizer = dateFnsLocalizer({
 const BigCalendar = ({
   data,
 }: {
-  data: { title: string; start: Date; end: Date }[];
+  data: {
+    title: string;
+    classId: number;
+    class: any;
+    start: Date;
+    end: Date;
+  }[];
 }) => {
   const [view, setView] = useState<View>(Views.WORK_WEEK);
 

@@ -85,16 +85,16 @@
 }
 
 .rbc-event:nth-child(1) {
-  background-color: #e2f8ff !important;
+  background-color: #eef7fd !important;
 }
 .rbc-event:nth-child(2) {
-  background-color: #fefce8 !important;
+  background-color: #dce4f0 !important;
 }
 .rbc-event:nth-child(3) {
-  background-color: #f2f1ff !important;
+  background-color: #fff6d6 !important;
 }
 .rbc-event:nth-child(4) {
-  background-color: #fdf2fb !important;
+  background-color: #fde6ec !important;
 }
 .rbc-event:nth-child(5) {
   background-color: #e2f8ff !important;
@@ -112,13 +112,30 @@
 .rbc-event-label {
   color: gray !important;
   margin-bottom: 5px;
+  font-size: 10px !important;
 }
 
-.rbc-events-container {
-  /* height: 500px !important; */
+.rbc-event-content {
+  font-size: 10px !important;
+}
+
+.rbc-timeslot-group {
+  min-height: 50px !important;
 }
 
 /* .react-calendar {
   background-color: #dce4f0 !important;
   border-radius: 10px !important;
 } */
+
+.react-calendar__tile--now {
+  background-color: #fff6d6 !important;
+}
+
+.react-calendar__month-view__days__day--weekend {
+  color: #f05a7e !important;
+}
+
+.rbc-today {
+  background-color: #eee !important;
+}

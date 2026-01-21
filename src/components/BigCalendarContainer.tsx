@@ -17,17 +17,30 @@ const BigCalendarContainer = async ({
     },
   });
 
+  const getClassName = async (id: number) => {
+    const classInfo = await prisma.class.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    return classInfo?.name;
+  };
+
+  const classNames = await Promise.all(
+    dataRes.map((lesson) => getClassName(lesson.classId))
+  );
+
   const data = dataRes.map((lesson) => ({
     title: lesson.name,
+    classId: lesson.classId,
+    class: classNames,
     start: lesson.startTime,
     end: lesson.endTime,
   }));
 
-  const schedule = adjustScheduleToCurrentWeek(data);
-
   return (
     <div className="h-full">
-      <BigCalendar data={schedule} />
+      <BigCalendar data={data} />
     </div>
   );
 };
