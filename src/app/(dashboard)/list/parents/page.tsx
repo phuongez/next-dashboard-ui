@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import FormContainer from "@/components/FormContainer";
 import { auth } from "@clerk/nextjs/server";
+import Link from "next/link";
 
 type ParentList = Parent & { students: Student[] };
 
@@ -52,7 +53,7 @@ const ParentListPage = async ({
   const renderRow = (item: ParentList) => (
     <tr
       key={item.id}
-      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaSkyLight"
+      className="border-b border-gray-200 text-sm hover:bg-gray-100"
     >
       <td className="flex items-center gap-4 p-4">
         <div className="flex flex-col">
@@ -61,11 +62,14 @@ const ParentListPage = async ({
         </div>
       </td>
       <td className="hidden lg:table-cell">
-        {item.students
-          .map((student) => {
-            return student.surname.split(" ")[1] + " " + student.name;
-          })
-          .join(", ")}
+        {item.students.map((student, index) => (
+          <span key={student.id}>
+            <Link href={`/list/students/${student.id}`}>
+              {student.surname.split(" ")[1] + " " + student.name}
+            </Link>
+            {index < item.students.length - 1 && ", "}
+          </span>
+        ))}
       </td>
       <td className="hidden lg:table-cell">{item.phone}</td>
       <td className="hidden md:table-cell">{item.address}</td>
@@ -128,6 +132,9 @@ const ParentListPage = async ({
       where: query,
       include: {
         students: true,
+      },
+      orderBy: {
+        createdAt: "desc",
       },
       take: ITEM_PER_PAGE,
       skip: (p - 1) * ITEM_PER_PAGE,

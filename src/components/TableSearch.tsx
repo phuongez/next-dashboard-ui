@@ -12,8 +12,11 @@ const TableSearch = () => {
     const value = (e.currentTarget[0] as HTMLInputElement).value;
 
     const params = new URLSearchParams(window.location.search);
+
+    params.delete("page"); // ⭐ quan trọng
     params.set("search", value);
-    router.push(`${window.location.pathname}?${params}`);
+
+    router.push(`${window.location.pathname}?${params.toString()}`);
   };
 
   return (
@@ -24,7 +27,7 @@ const TableSearch = () => {
       <Image src="/search.png" alt="" width={14} height={14} />
       <input
         type="text"
-        placeholder="Search..."
+        placeholder="Tìm kiếm..."
         className="w-[200px] p-2 bg-transparent outline-none"
       />
     </form>

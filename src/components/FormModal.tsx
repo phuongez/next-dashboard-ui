@@ -192,8 +192,8 @@ const FormModal = ({
     type === "create"
       ? "bg-[#F2D25C]"
       : type === "update"
-      ? "bg-lamaSky"
-      : "bg-[#CFCEFF]";
+      ? "bg-[#F2D25C]"
+      : "bg-lamaYellow";
 
   const [open, setOpen] = useState(false);
 
@@ -233,11 +233,31 @@ const FormModal = ({
   return (
     <>
       <button
-        className={`${size} flex items-center justify-center rounded-full ${bgColor}`}
+        className={`${size} group relative flex items-center justify-center rounded-full ${bgColor}`}
         onClick={() => setOpen(true)}
       >
         <Image src={`/${type}.png`} alt="" width={16} height={16} />
+
+        {/* Tooltip */}
+        <span
+          className="
+      absolute top-full mt-2
+      whitespace-nowrap
+      rounded bg-black px-2 py-1
+      text-xs text-white
+      opacity-0
+      transition
+      group-hover:opacity-100
+      pointer-events-none
+      z-50
+    "
+        >
+          {type === "update" && "Sửa"}
+          {type === "create" && "Tạo"}
+          {type === "delete" && "Xoá"}
+        </span>
       </button>
+
       {open && (
         <div className="w-screen h-screen absolute left-0 top-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
           <div className="bg-white p-4 rounded-md relative w-[90%] md:w-[70%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]">

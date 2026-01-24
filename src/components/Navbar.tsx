@@ -35,7 +35,7 @@ const Navbar = async () => {
         })
       : null;
   return (
-    <div className="flex items-center justify-between p-4">
+    <div className="flex items-center justify-between p-4 lg:py-6">
       {/* SEARCH BAR */}
       <div className="hidden md:flex md:w-1/2 items-center px-2">
         {/* <Image src="/search.png" alt="" width={14} height={14} />
@@ -51,11 +51,39 @@ const Navbar = async () => {
       </div>
       {/* ICONS AND USER */}
       <div className="flex items-center gap-6 justify-end w-full">
-        <div className="bg-white rounded-full w-7 h-7 flex items-center justify-center cursor-pointer">
+        <div className="group bg-white rounded-full w-7 h-7 flex items-center justify-center cursor-pointer relative">
           <NavbarMessages />
+          <span
+            className="
+      absolute top-full mt-2
+      whitespace-nowrap
+      rounded bg-black px-2 py-1
+      text-xs text-white
+      opacity-0
+      transition
+      group-hover:opacity-100
+      pointer-events-none
+    "
+          >
+            Tin nhắn
+          </span>
         </div>
-        <div className="bg-white rounded-full w-7 h-7 flex items-center justify-center cursor-pointer relative">
+        <div className="group bg-white rounded-full w-7 h-7 flex items-center justify-center cursor-pointer relative">
           <NavbarNotification />
+          <span
+            className="
+      absolute top-full mt-2
+      whitespace-nowrap
+      rounded bg-black px-2 py-1
+      text-xs text-white
+      opacity-0
+      transition
+      group-hover:opacity-100
+      pointer-events-none
+    "
+          >
+            Thông báo
+          </span>
         </div>
         <div className="flex flex-col">
           {pageRole === "admin" && (

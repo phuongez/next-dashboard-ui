@@ -68,7 +68,7 @@ const ExamListPage = async ({
   const renderRow = (item: ExamList) => (
     <tr
       key={item.id}
-      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaSkyLight"
+      className="border-b border-gray-200 text-sm hover:bg-gray-100"
     >
       <td className="">{item.title}</td>
       <td className="flex items-center gap-4 p-4">
