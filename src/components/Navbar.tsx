@@ -4,6 +4,7 @@ import Image from "next/image";
 import NavbarNotification from "./navbar/NavbarNotification";
 import NavbarMessages from "./NavbarMessages";
 import { prisma } from "@/lib/prisma";
+import Link from "next/link";
 
 const Navbar = async () => {
   const user = await currentUser();
@@ -85,7 +86,16 @@ const Navbar = async () => {
             Thông báo
           </span>
         </div>
-        <div className="flex flex-col">
+        <Link
+          href={"/"}
+          className="flex items-center justify-center lg:justify-start gap-2 "
+        >
+          <Image src="/logo.png" alt="Logo" width={32} height={32} />
+          <span className="hidden lg:block font-bold text-xl text-lamaYellow">
+            ClassHours
+          </span>
+        </Link>
+        {/* <div className="flex flex-col">
           {pageRole === "admin" && (
             <span className="text-xs leading-3 font-medium">
               {user?.lastName + " " + user?.firstName}
@@ -100,7 +110,7 @@ const Navbar = async () => {
           <span className="text-[10px] text-gray-500 text-right">
             {user?.publicMetadata?.role as string}
           </span>
-        </div>
+        </div> */}
         {/* <Image src="/avatar.png" alt="" width={36} height={36} className="rounded-full"/> */}
         <UserButton />
       </div>

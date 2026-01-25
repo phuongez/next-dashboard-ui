@@ -16,7 +16,7 @@ export default async function DashboardLayout({
     <div className="h-screen flex">
       {/* LEFT */}
       <div className="w-[14%] md:w-[8%] lg:w-[16%] xl:w-[14%] bg-lamaYellow">
-        <Link
+        {/* <Link
           href={"/"}
           className="flex items-center justify-center lg:justify-start gap-2 bg-[#F2D25C] p-4"
         >
@@ -24,7 +24,22 @@ export default async function DashboardLayout({
           <span className="hidden lg:block font-bold text-xl text-lamaYellow">
             ClassHours
           </span>
-        </Link>
+        </Link> */}
+        <div className="hidden bg-white w-full lg:flex items-center p-8 gap-4 py-4">
+          <Image
+            src={user?.imageUrl || "/avatar.png"}
+            alt=""
+            width={60}
+            height={60}
+            className="object-cover rounded-xl"
+          />
+          <div className="flex-col hidden md:flex">
+            <h1 className="font-bold">
+              {user?.lastName} {user?.firstName}
+            </h1>
+            <h2 className="text-xs">Vai trò: {role}</h2>
+          </div>
+        </div>
         <Menu role={role} />
       </div>
       {/* RIGHT */}

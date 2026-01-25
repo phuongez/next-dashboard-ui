@@ -118,9 +118,9 @@ const Menu = ({ role }: { role: string }) => {
     <div className="text-sm p-4">
       {menuItems.map((group) => (
         <div className="flex flex-col gap-2" key={group.title}>
-          <span className="hidden lg:block text-white font-semibold my-4">
+          {/* <span className="hidden lg:block text-white font-semibold my-4">
             {group.title}
-          </span>
+          </span> */}
 
           {group.items.map((item) => {
             if (!item.visible.includes(role)) return null;
