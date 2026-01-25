@@ -131,9 +131,10 @@ export default async function AssignmentListPage({
         </h1>
         <div className="flex items-center gap-4">
           <TableSearch />
-          {role === "admin" && (
-            <FormContainer table="assignment" type="create" />
-          )}
+          {role === "admin" ||
+            (role === "teacher" && (
+              <FormContainer table="assignment" type="create" />
+            ))}
         </div>
       </div>
 
