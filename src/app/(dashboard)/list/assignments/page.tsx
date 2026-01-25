@@ -177,8 +177,8 @@ export default async function AssignmentListPage({
               {(role === "admin" || role === "teacher") && (
                 <td>
                   <div className="flex items-center gap-2">
-                    <FormModal table="assignment" type="update" data={a} />
-                    <FormModal table="assignment" type="delete" id={a.id} />
+                    <FormContainer table="assignment" type="update" data={a} />
+                    <FormContainer table="assignment" type="delete" id={a.id} />
                   </div>
                 </td>
               )}
