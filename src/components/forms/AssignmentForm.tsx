@@ -91,7 +91,7 @@ const AssignmentForm = ({ type, data, setOpen, relatedData }: Props) => {
   return (
     <form className="flex flex-col gap-6" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
-        {type === "create" ? "Tạo bài tập" : "Cập nhật bài tập"}
+        {type === "create" ? "Tạo bài luận" : "Cập nhật bài luận"}
       </h1>
 
       {/* ===== TITLE ===== */}
@@ -159,7 +159,7 @@ const AssignmentForm = ({ type, data, setOpen, relatedData }: Props) => {
         </span>
       )} */}
 
-      <button className="bg-lamaYellow text-white py-2 rounded-md">
+      <button className="bg-lamaYellow text-white py-2 rounded-md mb-4">
         {type === "create" ? "Tạo bài luận" : "Cập nhật"}
       </button>
     </form>

@@ -45,6 +45,7 @@ const EventForm = ({ type, data, setOpen, relatedData }: Props) => {
       type === "update"
         ? {
             ...data,
+            classId: data?.classId ?? null,
             startTime: data?.startTime
               ? new Date(data.startTime).toISOString().slice(0, 16)
               : undefined,
@@ -52,7 +53,9 @@ const EventForm = ({ type, data, setOpen, relatedData }: Props) => {
               ? new Date(data.endTime).toISOString().slice(0, 16)
               : undefined,
           }
-        : undefined,
+        : {
+            classId: null,
+          },
   });
 
   const [state, formAction] = useActionState(
@@ -66,6 +69,7 @@ const EventForm = ({ type, data, setOpen, relatedData }: Props) => {
   /* ================= SUBMIT ================= */
 
   const onSubmit = handleSubmit((formData) => {
+    console.log("SUBMIT CLICKED", formData);
     const parsed = eventSchema.parse(formData);
     startTransition(() => {
       formAction({
@@ -74,6 +78,7 @@ const EventForm = ({ type, data, setOpen, relatedData }: Props) => {
         classId: parsed.classId || null,
       });
     });
+    console.log(parsed);
   });
 
   /* ================= EFFECT ================= */
@@ -145,7 +150,6 @@ const EventForm = ({ type, data, setOpen, relatedData }: Props) => {
         <label className="text-xs text-gray-500">Phạm vi sự kiện</label>
         <select
           {...register("classId")}
-          defaultValue={data?.classId ?? ""}
           className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm"
         >
           <option value="">Toàn trường</option>
@@ -167,7 +171,10 @@ const EventForm = ({ type, data, setOpen, relatedData }: Props) => {
         </span>
       )}
 
-      <button className="bg-lamaYellow text-white py-2 rounded-md">
+      <button
+        type="submit"
+        className="bg-lamaYellow  text-white py-2 rounded-md"
+      >
         {type === "create" ? "Tạo sự kiện" : "Cập nhật"}
       </button>
     </form>

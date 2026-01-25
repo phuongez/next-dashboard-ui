@@ -71,8 +71,8 @@ const AttendancePage = async ({
         attendances: true,
       },
       orderBy: { startTime: "desc" },
-      take: ITEM_PER_PAGE,
-      skip: (p - 1) * ITEM_PER_PAGE,
+      take: 14,
+      skip: (p - 1) * 14,
     }),
     prisma.lesson.count({ where }),
   ]);
@@ -123,7 +123,7 @@ const AttendancePage = async ({
   const renderRow = (item: AttendanceLessonRow) => (
     <tr
       key={item.id}
-      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaSkyLight"
+      className="border-b border-gray-200 text-sm hover:bg-gray-100"
     >
       <td className="p-4 font-medium">{item.name}</td>
       <td>{item.className}</td>

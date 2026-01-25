@@ -1,171 +1,159 @@
-import FormContainer from "@/components/FormContainer";
-import Pagination from "@/components/Pagination";
-import Table from "@/components/Table";
-import TableSearch from "@/components/TableSearch";
-import { Class, Event, Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
-import { ITEM_PER_PAGE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
-import Image from "next/image";
-import Link from "next/link";
-
-type EventList = Event & {
-  class: Class;
-};
+import Pagination from "@/components/Pagination";
+import TableSearch from "@/components/TableSearch";
+import FormContainer from "@/components/FormContainer";
+import { ITEM_PER_PAGE } from "@/lib/settings";
+import { Prisma } from "@/generated/prisma/client";
 
 const EventListPage = async ({
   searchParams,
 }: {
-  searchParams: { [key: string]: string } | undefined;
+  searchParams?: { [key: string]: string | undefined };
 }) => {
   const { userId, sessionClaims } = await auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
-  const currentUserId = userId;
 
-  const columns = [
-    {
-      header: "Tên sự kiện",
-      accessor: "title",
-    },
-    {
-      header: "Lớp",
-      accessor: "class",
-      // className: "hidden md:table-cell",
-    },
-    {
-      header: "Ngày",
-      accessor: "date",
-      className: "hidden md:table-cell",
-    },
-    {
-      header: "Bắt đầu",
-      accessor: "startTime",
-      className: "hidden md:table-cell",
-    },
-    {
-      header: "Kết thúc",
-      accessor: "endTime",
-      className: "hidden md:table-cell",
-    },
-    ...(role === "admin"
-      ? [
-          {
-            header: "Actions",
-            accessor: "action",
-          },
-        ]
-      : []),
-  ];
-
-  const renderRow = (item: EventList) => (
-    <tr
-      key={item.id}
-      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaSkyLight"
-    >
-      <td className="flex items-center gap-4 p-4">{item.title}</td>
-      <td className="">{item.class?.name || "-"}</td>
-      <td className="hidden md:table-cell">
-        {new Intl.DateTimeFormat("vi-VN").format(item.startTime)}
-      </td>
-      <td className="hidden md:table-cell">
-        {item.startTime.toLocaleString("vi-VN", {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        })}
-      </td>
-      <td className="hidden md:table-cell">
-        {item.endTime.toLocaleString("vi-VN", {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        })}
-      </td>
-      <td>
-        <div className="flex items-center gap-2">
-          {role === "admin" && (
-            <>
-              <FormContainer table="event" type="update" data={item} />
-              <FormContainer table="event" type="delete" id={item.id} />
-            </>
-          )}
-        </div>
-      </td>
-    </tr>
-  );
-
-  const { page, ...queryParams } = (await searchParams) || {};
-
+  const { page, search } = (await searchParams) || {};
   const p = page ? parseInt(page) : 1;
 
-  // URL PARAMS CONDITION
+  /* ================= WHERE ================= */
+  const where: Prisma.EventWhereInput = {};
 
-  const query: Prisma.EventWhereInput = {};
-
-  if (queryParams) {
-    for (const [key, value] of Object.entries(queryParams)) {
-      if (value !== undefined) {
-        switch (key) {
-          case "search":
-            query.title = { contains: value, mode: "insensitive" };
-            break;
-          default:
-            break;
-        }
-      }
-    }
+  if (search) {
+    where.title = { contains: search, mode: "insensitive" };
   }
 
   // ROLE CONDITIONS
-
-  const roleConditions = {
-    teacher: { lessons: { some: { teacherId: currentUserId! } } },
-    student: { students: { some: { id: currentUserId! } } },
-    parent: { students: { some: { parentId: currentUserId! } } },
-  };
-
-  query.OR = [
-    { classId: null },
-    {
-      class: roleConditions[role as keyof typeof roleConditions] || {},
-    },
-  ];
-
-  const [data, count] = await Promise.all([
-    prisma.event.findMany({
-      where: query,
-      include: {
-        class: true,
+  if (role === "teacher") {
+    where.OR = [
+      { classId: null },
+      {
+        class: {
+          lessons: {
+            some: { teacherId: userId! },
+          },
+        },
       },
-      take: ITEM_PER_PAGE,
-      skip: ITEM_PER_PAGE * (p - 1),
+    ];
+  }
+
+  if (role === "student") {
+    where.OR = [
+      { classId: null },
+      {
+        class: {
+          students: {
+            some: { id: userId! },
+          },
+        },
+      },
+    ];
+  }
+
+  if (role === "parent") {
+    where.OR = [
+      { classId: null },
+      {
+        class: {
+          students: {
+            some: { parentId: userId! },
+          },
+        },
+      },
+    ];
+  }
+
+  // ADMIN → KHÔNG FILTER GÌ CẢ
+  // admin xem tất cả event
+
+  /* ================= QUERY ================= */
+  const [events, count] = await Promise.all([
+    prisma.event.findMany({
+      where,
+      include: { class: true },
+      orderBy: { startTime: "desc" },
+      take: 14,
+      skip: 14 * (p - 1),
     }),
-    prisma.event.count({ where: query }),
+    prisma.event.count({ where }),
   ]);
 
+  /* ================= UI ================= */
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
       {/* TOP */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-4">
         <h1 className="hidden md:block text-lg font-semibold">
           Tất cả sự kiện
         </h1>
-        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+        <div className="flex items-center gap-4">
           <TableSearch />
-          <div className="flex items-center gap-4 self-end">
-            {/* <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <Image src={"/filter.png"} alt="" width={14} height={14} />
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <Image src={"/sort.png"} alt="" width={14} height={14} />
-            </button> */}
-            {role === "admin" && <FormContainer table="event" type="create" />}
-          </div>
+          {role === "admin" && <FormContainer table="event" type="create" />}
         </div>
       </div>
-      {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={data} />
-      {/* PAGINATION */}
+
+      {/* TABLE */}
+      <table className="w-full border-collapse text-sm">
+        <thead>
+          <tr>
+            <th className="text-left text-sm text-gray-500">Tên sự kiện</th>
+            <th className="text-left text-sm text-gray-500">Phạm vi</th>
+            <th className="text-left text-sm text-gray-500 hidden md:table-cell">
+              Ngày
+            </th>
+            <th className="text-left text-sm text-gray-500 hidden md:table-cell">
+              Bắt đầu
+            </th>
+            <th className="text-left text-sm text-gray-500 hidden md:table-cell">
+              Kết thúc
+            </th>
+            {role === "admin" && (
+              <th className="text-left text-sm text-gray-500">Actions</th>
+            )}
+          </tr>
+        </thead>
+
+        <tbody>
+          {events.map((e) => (
+            <tr
+              key={e.id}
+              className="border-b border-gray-200 hover:bg-gray-100"
+            >
+              <td className="p-4">{e.title}</td>
+
+              <td className="">{e.class ? e.class.name : "Toàn trường"}</td>
+
+              <td className="hidden md:table-cell ">
+                {new Intl.DateTimeFormat("vi-VN").format(e.startTime)}
+              </td>
+
+              <td className="hidden md:table-cell ">
+                {e.startTime.toLocaleTimeString("vi-VN", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </td>
+
+              <td className="hidden md:table-cell ">
+                {e.endTime.toLocaleTimeString("vi-VN", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </td>
+
+              {role === "admin" && (
+                <td className="">
+                  <div className="flex gap-2">
+                    <FormContainer table="event" type="update" data={e} />
+                    <FormContainer table="event" type="delete" id={e.id} />
+                  </div>
+                </td>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
       <Pagination page={p} count={count} />
     </div>
