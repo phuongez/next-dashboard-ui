@@ -43,6 +43,7 @@ const AssignmentForm = ({ type, data, setOpen, relatedData }: Props) => {
       type === "update"
         ? {
             ...data,
+            lessonId: data?.lessonId ?? "", // ✅ THÊM DÒNG NÀY
             startDate: data?.startDate
               ? new Date(data.startDate).toISOString().slice(0, 16)
               : undefined,
@@ -52,6 +53,26 @@ const AssignmentForm = ({ type, data, setOpen, relatedData }: Props) => {
           }
         : undefined,
   });
+
+  // const {
+  //   register,
+  //   handleSubmit,
+  //   formState: { errors },
+  // } = useForm<z.infer<typeof assignmentFormSchema>>({
+  //   resolver: zodResolver(assignmentFormSchema),
+  //   defaultValues:
+  //     type === "update"
+  //       ? {
+  //           ...data,
+  //           startDate: data?.startDate
+  //             ? new Date(data.startDate).toISOString().slice(0, 16)
+  //             : undefined,
+  //           dueDate: data?.dueDate
+  //             ? new Date(data.dueDate).toISOString().slice(0, 16)
+  //             : undefined,
+  //         }
+  //       : undefined,
+  // });
 
   const onSubmit = handleSubmit(async (formData) => {
     const action = type === "create" ? createAssignment : updateAssignment;
@@ -113,7 +134,6 @@ const AssignmentForm = ({ type, data, setOpen, relatedData }: Props) => {
         <label className="text-xs text-gray-500">Tiết học</label>
         <select
           {...register("lessonId")}
-          defaultValue={data?.lessonId ?? ""}
           className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm"
         >
           <option value="">Chọn tiết học</option>
