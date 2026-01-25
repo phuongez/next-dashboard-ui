@@ -3,13 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import {
-  Dispatch,
-  SetStateAction,
-  startTransition,
-  useActionState,
-  useEffect,
-} from "react";
+import { Dispatch, SetStateAction } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
@@ -59,22 +53,6 @@ const AssignmentForm = ({ type, data, setOpen, relatedData }: Props) => {
         : undefined,
   });
 
-  //   const [state, formAction] = useActionState(
-  //     type === "create" ? createAssignment : updateAssignment,
-  //     {
-  //       success: false,
-  //       error: false,
-  //     }
-  //   );
-
-  /* ================= SUBMIT ================= */
-
-  //   const onSubmit = handleSubmit((formData) => {
-  //     startTransition(() => {
-  //       const parsed = assignmentSchema.parse(formData);
-  //       formAction(parsed);
-  //     });
-  //   });
   const onSubmit = handleSubmit(async (formData) => {
     const action = type === "create" ? createAssignment : updateAssignment;
 
@@ -88,18 +66,6 @@ const AssignmentForm = ({ type, data, setOpen, relatedData }: Props) => {
       toast.error("Có lỗi xảy ra");
     }
   });
-
-  /* ================= EFFECT ================= */
-
-  //   useEffect(() => {
-  //     if (state.success) {
-  //       toast(`Bài tập đã được ${type === "create" ? "tạo" : "cập nhật"}`);
-  //       setOpen(false);
-  //       router.refresh();
-  //     }
-  //   }, [state, router, type, setOpen]);
-
-  /* ================= UI ================= */
 
   return (
     <form className="flex flex-col gap-6" onSubmit={onSubmit}>

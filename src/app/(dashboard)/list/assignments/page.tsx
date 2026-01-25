@@ -1,168 +1,110 @@
+import { Prisma } from "@/generated/prisma/client";
+import { prisma } from "@/lib/prisma";
+import Pagination from "@/components/Pagination";
+import TableSearch from "@/components/TableSearch";
 import FormContainer from "@/components/FormContainer";
 import FormModal from "@/components/FormModal";
-import Pagination from "@/components/Pagination";
-import Table from "@/components/Table";
-import TableSearch from "@/components/TableSearch";
-import {
-  Assignment,
-  Class,
-  Prisma,
-  Subject,
-  Teacher,
-} from "@/generated/prisma/client";
-import { prisma } from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
-import Image from "next/image";
-import Link from "next/link";
+import SortableTH from "../students/SortableTH";
 
-type AssignmentList = Assignment & {
-  lesson: {
-    subject: Subject;
-    class: Class;
-    teacher: Teacher;
-  };
-};
-
-const AssignmentListPage = async ({
+export default async function AssignmentListPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string } | undefined;
-}) => {
+  searchParams: { [key: string]: string | undefined };
+}) {
   const { userId, sessionClaims } = await auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
-  console.log(role);
-  const currentUserId = userId;
 
-  const columns = [
-    {
-      header: "Tên bài",
-      accessor: "name",
-    },
-    {
-      header: "Tên môn",
-      accessor: "subject",
-    },
-    {
-      header: "Lớp",
-      accessor: "class",
-    },
-    {
-      header: "Giáo viên",
-      accessor: "teacher",
-      className: "hidden md:table-cell",
-    },
-    {
-      header: "Ngày đến hạn",
-      accessor: "dueDate",
-      className: "hidden md:table-cell",
-    },
-    ...(role === "admin" || role === "teacher"
-      ? [
-          {
-            header: "Actions",
-            accessor: "action",
-          },
-        ]
-      : []),
-  ];
-
-  const renderRow = (item: AssignmentList) => (
-    <tr
-      key={item.id}
-      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaSkyLight"
-    >
-      <td className="">{item.title}</td>
-      <td className="flex items-center gap-4 p-4">
-        {item.lesson.subject.name}
-      </td>
-      <td>{item.lesson.class.name}</td>
-      <td className="hidden md:table-cell">
-        {item.lesson.teacher.name + " " + item.lesson.teacher.surname}
-      </td>
-      <td className="hidden md:table-cell">
-        {new Intl.DateTimeFormat("en-US").format(item.dueDate)}
-      </td>
-      <td>
-        <div className="flex items-center gap-2">
-          {(role === "admin" || role === "teacher") && (
-            <>
-              <FormModal table="assignment" type="update" data={item} />
-              <FormModal table="assignment" type="delete" id={item.id} />
-            </>
-          )}
-        </div>
-      </td>
-    </tr>
-  );
-
-  const { page, ...queryParams } = (await searchParams) || {};
-
+  const { page, sortBy, sortOrder, ...queryParams } =
+    (await searchParams) || {};
   const p = page ? parseInt(page) : 1;
 
-  // URL PARAMS CONDITION
+  /* ================= FILTER ================= */
+  const where: Prisma.AssignmentWhereInput = {
+    lesson: {},
+  };
 
-  const query: Prisma.AssignmentWhereInput = {};
+  if (queryParams.classId) {
+    where.lesson!.classId = parseInt(queryParams.classId);
+  }
 
-  query.lesson = {};
+  if (queryParams.teacherId) {
+    where.lesson!.teacherId = queryParams.teacherId;
+  }
 
-  if (queryParams) {
-    for (const [key, value] of Object.entries(queryParams)) {
-      if (value !== undefined) {
-        switch (key) {
-          case "classId":
-            query.lesson.classId = parseInt(value);
-            break;
-          case "teacherId":
-            query.lesson.teacherId = value;
-            break;
-          case "search":
-            query.lesson.subject = {
-              name: {
-                contains: value,
-                mode: "insensitive",
-              },
-            };
-            break;
-          default:
-            break;
-        }
-      }
-    }
+  if (queryParams.search) {
+    where.lesson!.subject = {
+      name: {
+        contains: queryParams.search,
+        mode: "insensitive",
+      },
+    };
   }
 
   // ROLE CONDITIONS
   switch (role) {
-    case "admin":
-      break;
     case "teacher":
-      query.lesson.teacherId = currentUserId!;
+      where.lesson!.teacherId = userId!;
       break;
+
     case "student":
-      query.lesson.class = {
+      where.lesson!.class = {
         students: {
-          some: {
-            id: currentUserId!,
-          },
+          some: { id: userId! },
         },
       };
       break;
+
     case "parent":
-      query.lesson.class = {
+      where.lesson!.class = {
         students: {
-          some: {
-            parentId: currentUserId!,
-          },
+          some: { parentId: userId! },
         },
       };
       break;
+
     default:
       break;
   }
 
-  const [data, count] = await Promise.all([
+  /* ================= SORT ================= */
+  const order: Prisma.SortOrder = sortOrder === "desc" ? "desc" : "asc";
+
+  let orderBy: Prisma.AssignmentOrderByWithRelationInput = {
+    dueDate: "desc", // default
+  };
+
+  if (sortBy === "subject") {
+    orderBy = {
+      lesson: {
+        subject: {
+          name: order,
+        },
+      },
+    };
+  }
+
+  if (sortBy === "class") {
+    orderBy = {
+      lesson: {
+        class: {
+          name: order,
+        },
+      },
+    };
+  }
+
+  if (sortBy === "due") {
+    orderBy = {
+      dueDate: order,
+    };
+  }
+
+  /* ================= QUERY ================= */
+  const [assignments, count] = await Promise.all([
     prisma.assignment.findMany({
-      where: query,
+      where,
       include: {
         lesson: {
           select: {
@@ -172,41 +114,81 @@ const AssignmentListPage = async ({
           },
         },
       },
-      take: ITEM_PER_PAGE,
-      skip: ITEM_PER_PAGE * (p - 1),
+      orderBy,
+      take: 14,
+      skip: 14 * (p - 1),
     }),
-    prisma.assignment.count({ where: query }),
+    prisma.assignment.count({ where }),
   ]);
 
+  /* ================= RENDER ================= */
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
       {/* TOP */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-4">
         <h1 className="hidden md:block text-lg font-semibold">
           Tất cả bài luận
         </h1>
-        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+        <div className="flex items-center gap-4">
           <TableSearch />
-          <div className="flex items-center gap-4 self-end">
-            {/* <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <Image src={"/filter.png"} alt="" width={14} height={14} />
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <Image src={"/sort.png"} alt="" width={14} height={14} />
-            </button> */}
-            {role === "admin" && (
-              <FormContainer table="assignment" type="create" />
-            )}
-          </div>
+          {role === "admin" && (
+            <FormContainer table="assignment" type="create" />
+          )}
         </div>
       </div>
-      {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={data} />
-      {/* PAGINATION */}
 
+      {/* TABLE */}
+      <table className="w-full border-collapse">
+        <thead>
+          <tr>
+            <th className="text-left text-sm text-gray-500">Tên bài</th>
+            <SortableTH label="Môn" sortKey="subject" />
+            <SortableTH label="Lớp" sortKey="class" />
+            <th className="text-left text-sm text-gray-500 hidden md:table-cell">
+              Giáo viên
+            </th>
+            <SortableTH label="Ngày đến hạn" sortKey="due" />
+            {(role === "admin" || role === "teacher") && (
+              <th className="text-left text-sm text-gray-500">Actions</th>
+            )}
+          </tr>
+        </thead>
+
+        <tbody>
+          {assignments.map((a) => (
+            <tr
+              key={a.id}
+              className="border-b border-gray-200 text-sm hover:bg-gray-100"
+            >
+              <td className="p-4">{a.title}</td>
+
+              <td className="">{a.lesson.subject.name}</td>
+
+              <td className="">{a.lesson.class.name}</td>
+
+              <td className="hidden md:table-cell">
+                {a.lesson.teacher.surname} {a.lesson.teacher.name}
+              </td>
+
+              <td className="">
+                {new Intl.DateTimeFormat("vi-VN").format(a.dueDate)}
+              </td>
+
+              {(role === "admin" || role === "teacher") && (
+                <td>
+                  <div className="flex items-center gap-2">
+                    <FormModal table="assignment" type="update" data={a} />
+                    <FormModal table="assignment" type="delete" id={a.id} />
+                  </div>
+                </td>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* PAGINATION */}
       <Pagination page={p} count={count} />
     </div>
   );
-};
-
-export default AssignmentListPage;
+}
