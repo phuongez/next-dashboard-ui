@@ -193,7 +193,7 @@ export default async function TeacherListPage({
                 <td>
                   <div className="flex items-center gap-2">
                     <Link href={`/list/teachers/${t.id}`}>
-                      <button className="group w-7 h-7 relative flex items-center justify-center rounded-full bg-lamaPurple">
+                      <button className="group w-7 h-7 relative flex items-center justify-center rounded-full bg-lamaYellow">
                         <Image src="/view.png" alt="" width={16} height={16} />
                         <span
                           className="

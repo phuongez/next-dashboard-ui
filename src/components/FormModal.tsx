@@ -193,7 +193,7 @@ const FormModal = ({
       ? "bg-[#F2D25C]"
       : type === "update"
       ? "bg-[#F2D25C]"
-      : "bg-lamaYellow";
+      : "bg-lamaPurple";
 
   const [open, setOpen] = useState(false);
 

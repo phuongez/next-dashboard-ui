@@ -95,6 +95,7 @@ const Navbar = async () => {
             ClassHours
           </span>
         </Link>
+        <UserButton />
         {/* <div className="flex flex-col">
           {pageRole === "admin" && (
             <span className="text-xs leading-3 font-medium">
@@ -112,7 +113,6 @@ const Navbar = async () => {
           </span>
         </div> */}
         {/* <Image src="/avatar.png" alt="" width={36} height={36} className="rounded-full"/> */}
-        <UserButton />
       </div>
     </div>
   );

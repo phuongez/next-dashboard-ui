@@ -1,3 +1,4 @@
+// app/(dashboard)/list/messages/[id]/page.tsx
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 

@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@/generated/prisma/client";
 import TableSearch from "@/components/TableSearch";
+import Image from "next/image";
 
 const InboxPage = async ({
   searchParams,
@@ -104,21 +105,52 @@ const InboxPage = async ({
                 ? `${conv.parent.surname} ${conv.parent.name}`
                 : `${conv.teacher.surname} ${conv.teacher.name}`;
 
+            const isAdmin = role === "admin";
+
             return (
-              <Link
+              <div
                 key={conv.id}
-                href={`/list/messages/${conv.id}`}
                 className="p-4 hover:bg-gray-50 flex flex-col gap-1"
               >
                 <div className="flex justify-between items-center">
                   <span className="font-medium">{otherUserName}</span>
-                  {lastMessage && (
-                    <span className="text-xs text-gray-400">
-                      {new Date(lastMessage.createdAt).toLocaleDateString(
-                        "vi-VN"
-                      )}
-                    </span>
-                  )}
+                  <div className="flex flex-col gap-4">
+                    {lastMessage && (
+                      <span className="text-xs text-gray-400">
+                        {new Date(lastMessage.createdAt).toLocaleDateString(
+                          "vi-VN"
+                        )}
+                      </span>
+                    )}
+                    {(role === "parent" || role === "teacher") && (
+                      <Link
+                        href={`/list/messages/${conv.id}`}
+                        className="group w-7 h-7 bg-lamaYellow flex items-center justify-center rounded-full relative"
+                      >
+                        <Image
+                          src={"/view.png"}
+                          alt=""
+                          width={16}
+                          height={16}
+                        />
+                        <span
+                          className="
+      absolute top-full mt-2
+      whitespace-nowrap
+      rounded bg-black px-2 py-1
+      text-xs text-white
+      opacity-0
+      transition
+      group-hover:opacity-100
+      pointer-events-none
+      z-50
+    "
+                        >
+                          Xem
+                        </span>
+                      </Link>
+                    )}
+                  </div>
                 </div>
 
                 <span className="text-xs text-gray-500">
@@ -131,7 +163,7 @@ const InboxPage = async ({
                     {lastMessage.content}
                   </span>
                 )}
-              </Link>
+              </div>
             );
           })}
         </div>
