@@ -17,26 +17,26 @@ const Navbar = async () => {
           },
         })
       : pageRole === "parent"
-      ? await prisma.parent.findUnique({
-          where: {
-            id: user?.id as string,
-          },
-        })
-      : pageRole === "student"
-      ? await prisma.student.findUnique({
-          where: {
-            id: user?.id as string,
-          },
-        })
-      : pageRole === "admin"
-      ? await prisma.admin.findUnique({
-          where: {
-            id: user?.id as string,
-          },
-        })
-      : null;
+        ? await prisma.parent.findUnique({
+            where: {
+              id: user?.id as string,
+            },
+          })
+        : pageRole === "student"
+          ? await prisma.student.findUnique({
+              where: {
+                id: user?.id as string,
+              },
+            })
+          : pageRole === "admin"
+            ? await prisma.admin.findUnique({
+                where: {
+                  id: user?.id as string,
+                },
+              })
+            : null;
   return (
-    <div className="flex items-center justify-between p-4 lg:py-6">
+    <div className="flex items-center justify-between p-4">
       {/* SEARCH BAR */}
       <div className="hidden md:flex md:w-1/2 items-center px-2">
         {/* <Image src="/search.png" alt="" width={14} height={14} />

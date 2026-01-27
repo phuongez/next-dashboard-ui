@@ -25,8 +25,10 @@ const UserCard = async ({
         </span>
         <Image src="/more.png" alt="" width={20} height={20} />
       </div>
-      <h1 className="text-2xl font-semibold my-4 text-white">{data}</h1>
-      <h2 className="capitalize text-sm font-medium text-white">{title}</h2>
+      <div className="flex justify-between items-end mt-4">
+        <h1 className="text-2xl font-semibold  text-white">{data}</h1>
+        <h2 className="capitalize text-sm font-medium text-white">{title}</h2>
+      </div>
     </div>
   );
 };

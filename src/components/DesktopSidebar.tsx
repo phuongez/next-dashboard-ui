@@ -6,7 +6,7 @@ export const DesktopSidebar = ({ role }: { role: string }) => {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden lg:flex h-screen text-sm flex-col">
+    <aside className="hidden lg:flex text-sm flex-col overflow-auto">
       {menuItems.map((group) => (
         <div key={group.title} className="flex flex-col gap-2">
           {/* <span className="text-white font-semibold my-4">{group.title}</span> */}
@@ -22,7 +22,7 @@ export const DesktopSidebar = ({ role }: { role: string }) => {
                 key={item.label}
                 href={item.href}
                 className={`
-                    flex items-center gap-4 px-4 py-2 rounded-md transition
+                    flex items-center gap-4 px-4 py-1 rounded-md transition
                     ${
                       isActive
                         ? "bg-[#F2D25C] text-black"

@@ -28,11 +28,11 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
       {/* <DashboardCard title="Độ tuổi học sinh">
         <AgeDistributionChart data={data.ageDistribution} />
       </DashboardCard> */}
-      <div className="md:col-span-2">
+      {/* <div className="md:col-span-2">
         <DashboardCard title="Số tiết học / giáo viên">
           <ClassesPerTeacherChart data={data.classesPerTeacher} />
         </DashboardCard>
-      </div>
+      </div> */}
 
       {/* <DashboardCard title="Chuyên cần">
         <AttendanceRateChart data={data.attendanceRate} />
