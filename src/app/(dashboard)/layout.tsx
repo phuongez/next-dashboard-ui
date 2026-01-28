@@ -4,6 +4,15 @@ import Menu from "../../components/Menu";
 import Navbar from "@/components/Navbar";
 import { currentUser } from "@clerk/nextjs/server";
 
+export type Role = "teacher" | "student" | "parent" | "admin";
+
+export const ROLE_LABEL: Record<Role, string> = {
+  teacher: "Giáo viên",
+  student: "Học sinh",
+  parent: "Phụ huynh",
+  admin: "Quản lí",
+};
+
 export default async function DashboardLayout({
   children,
 }: Readonly<{
@@ -23,15 +32,6 @@ export default async function DashboardLayout({
     <div className="h-screen flex">
       {/* LEFT */}
       <div className="w-[14%] md:w-[8%] lg:w-[16%] xl:w-[16%] 2xl:w-[14%] bg-lamaYellow">
-        {/* <Link
-          href={"/"}
-          className="flex items-center justify-center lg:justify-start gap-2 bg-[#F2D25C] p-4"
-        >
-          <Image src="/logo.png" alt="Logo" width={32} height={32} />
-          <span className="hidden lg:block font-bold text-xl text-lamaYellow">
-            ClassHours
-          </span>
-        </Link> */}
         <div className="hidden bg-white w-full lg:flex items-center p-8 gap-4 py-4">
           <Image
             src={user?.imageUrl || "/avatar.png"}
@@ -44,7 +44,9 @@ export default async function DashboardLayout({
             <h1 className="font-bold">
               {user?.lastName} {user?.firstName}
             </h1>
-            <h2 className="text-xs">Vai trò: {roleName[role]}</h2>
+            <h2 className="text-xs">
+              Vai trò: {roleName[role as Role] ?? "Không xác định"}
+            </h2>
           </div>
         </div>
         <Menu role={role} />
