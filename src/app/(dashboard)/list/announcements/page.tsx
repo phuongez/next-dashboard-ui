@@ -50,7 +50,7 @@ const AnnouncementListPage = async ({
   const renderRow = (item: AnnouncementList) => (
     <tr
       key={item.id}
-      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaSkyLight"
+      className="border-b border-gray-200 text-sm hover:bg-gray-100"
     >
       <td className="flex items-center gap-4 p-4">{item.title}</td>
       <td className="">{item.class?.name || "-"}</td>
@@ -119,8 +119,8 @@ const AnnouncementListPage = async ({
       include: {
         class: true,
       },
-      take: ITEM_PER_PAGE,
-      skip: ITEM_PER_PAGE * (p - 1),
+      take: 13,
+      skip: 13 * (p - 1),
     }),
     prisma.announcement.count({ where: query }),
   ]);

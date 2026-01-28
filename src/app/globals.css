@@ -13,7 +13,7 @@
 }
 
 .react-calendar__tile--active {
-  background-color: white !important;
+  background-color: rgb(225, 225, 225) !important;
   color: black !important;
 }
 
@@ -66,8 +66,24 @@
 }
 
 .rbc-timeslot-group {
+  border-bottom: none !important;
+}
+
+.rbc-timeslot-group {
   /* background-color: #f7fdff !important; */
   height: fit-content !important;
+}
+
+.rbc-time-content > * + * > * {
+  border-left: 1px solid #dce4f0 !important;
+}
+
+.rbc-time-view {
+  border: 1px solid #dce4f0 !important;
+}
+
+.rbc-current-time-indicator {
+  background-color: black !important;
 }
 
 .rbc-day-slot {
@@ -78,9 +94,7 @@
   border: none !important;
   color: black !important;
   padding: 10px !important;
-  margin: 10px !important;
-  width: 95% !important;
-
+  width: 100% !important;
   flex-flow: wrap !important;
 }
 
@@ -123,10 +137,22 @@
   min-height: 50px !important;
 }
 
+.rbc-day-slot .rbc-events-container {
+  margin-right: 0px !important;
+}
+
+.rbc-event-label {
+  display: none !important;
+}
+
 /* .react-calendar {
   background-color: #dce4f0 !important;
   border-radius: 10px !important;
 } */
+
+.react-calendar__tile--now {
+  background-color: white !important;
+}
 
 .react-calendar__tile--now abbr {
   background-color: #4a628a !important;
@@ -145,7 +171,7 @@
 }
 
 .rbc-today {
-  background-color: #eee !important;
+  background-color: white !important;
 }
 
 /* .react-calendar__navigation {

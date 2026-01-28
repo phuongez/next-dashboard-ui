@@ -1,12 +1,17 @@
 import { prisma } from "@/lib/prisma";
 import Image from "next/image";
+import Link from "next/link";
 
 const UserCard = async ({
   type,
   title,
+  icon,
+  link,
 }: {
   type: "admin" | "student" | "teacher" | "parent";
   title: string;
+  icon: any;
+  link: string;
 }) => {
   const modelMap: Record<typeof type, any> = {
     admin: prisma.admin,
@@ -23,7 +28,9 @@ const UserCard = async ({
         <span className="text-[10px] bg-white px-2 py-1 rounded-full ">
           {new Intl.DateTimeFormat("vi-VN").format(new Date())}
         </span>
-        <Image src="/more.png" alt="" width={20} height={20} />
+        <Link href={link}>
+          <Image src="/more.png" alt="" width={20} height={20} />
+        </Link>
       </div>
       <div className="flex justify-between items-end mt-4">
         <h1 className="text-2xl font-semibold  text-white">{data}</h1>

@@ -12,6 +12,13 @@ export default async function DashboardLayout({
   const user = await currentUser();
   const role = user?.publicMetadata.role as string;
 
+  const roleName = {
+    teacher: "Giáo viên",
+    student: "Học sinh",
+    parent: "Phụ huynh",
+    admin: "Quản lí",
+  };
+
   return (
     <div className="h-screen flex">
       {/* LEFT */}
@@ -37,7 +44,7 @@ export default async function DashboardLayout({
             <h1 className="font-bold">
               {user?.lastName} {user?.firstName}
             </h1>
-            <h2 className="text-xs">Vai trò: {role}</h2>
+            <h2 className="text-xs">Vai trò: {roleName[role]}</h2>
           </div>
         </div>
         <Menu role={role} />

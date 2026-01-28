@@ -16,7 +16,7 @@ const AcademicPage = async ({
   const { userId, sessionClaims } = await auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
 
-  if (!userId || (role !== "admin" && role !== "teacher")) {
+  if (!userId) {
     return null;
   }
 
@@ -28,6 +28,7 @@ const AcademicPage = async ({
   ====================================================== */
   const andConditions: Prisma.StudentWhereInput[] = [];
 
+  // 👨‍🏫 Teacher: chỉ thấy học sinh thuộc các lớp mình dạy
   if (role === "teacher") {
     andConditions.push({
       class: {
@@ -40,6 +41,21 @@ const AcademicPage = async ({
     });
   }
 
+  // 👨‍👩‍👧 Parent: chỉ thấy con của mình
+  if (role === "parent") {
+    andConditions.push({
+      parentId: userId,
+    });
+  }
+
+  // 🎓 Student: chỉ thấy chính mình
+  if (role === "student") {
+    andConditions.push({
+      id: userId,
+    });
+  }
+
+  // 🔍 Search (áp dụng cho mọi role)
   if (search) {
     andConditions.push({
       OR: [

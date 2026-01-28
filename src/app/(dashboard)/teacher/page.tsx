@@ -10,11 +10,11 @@ const TeacherPage = async ({
 }) => {
   const { userId } = await auth();
   return (
-    <div className="flex-1 p-4 flex gap-8 flex-col xl:flex-row">
+    <div className="flex-1 px-4 flex gap-8 flex-col xl:flex-row">
       {/* LEFT */}
       <div className="w-full xl:w-2/3 ">
-        <div className="h-full bg-white p-4 rounded-md max-h-[85vh]">
-          <h1 className="text-xl font-semibold">Schedule</h1>
+        <div className="h-full bg-white p-4 rounded-md ">
+          <h1 className="text-xl font-semibold">📆 Lịch dạy</h1>
           <BigCalendarContainer type="teacherId" id={userId!} />
         </div>
       </div>
