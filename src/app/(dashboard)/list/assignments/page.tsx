@@ -115,8 +115,8 @@ export default async function AssignmentListPage({
         },
       },
       orderBy,
-      take: 14,
-      skip: 14 * (p - 1),
+      take: ITEM_PER_PAGE,
+      skip: ITEM_PER_PAGE * (p - 1),
     }),
     prisma.assignment.count({ where }),
   ]);
@@ -141,7 +141,9 @@ export default async function AssignmentListPage({
       <table className="w-full border-collapse">
         <thead>
           <tr>
-            <th className="text-left text-sm text-gray-500">Tên bài</th>
+            <th className="hidden md:table-cell text-left text-sm text-gray-500">
+              Tên bài
+            </th>
             <SortableTH label="Môn" sortKey="subject" />
             <SortableTH label="Lớp" sortKey="class" />
             <th className="text-left text-sm text-gray-500 hidden md:table-cell">
@@ -160,9 +162,9 @@ export default async function AssignmentListPage({
               key={a.id}
               className="border-b border-gray-200 text-sm hover:bg-gray-100"
             >
-              <td className="p-4">{a.title}</td>
+              <td className="hidden md:table-cell p-4">{a.title}</td>
 
-              <td className="">{a.lesson.subject.name}</td>
+              <td className="py-4">{a.lesson.subject.name}</td>
 
               <td className="">{a.lesson.class.name}</td>
 

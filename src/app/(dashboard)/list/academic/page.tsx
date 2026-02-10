@@ -101,8 +101,8 @@ const AcademicPage = async ({
         class: true,
       },
       orderBy: studentOrderBy,
-      take: 14,
-      skip: 14 * (p - 1),
+      take: ITEM_PER_PAGE,
+      skip: ITEM_PER_PAGE * (p - 1),
     }),
     prisma.student.count({ where: studentWhere }),
   ]);

@@ -119,8 +119,8 @@ const AnnouncementListPage = async ({
       include: {
         class: true,
       },
-      take: 13,
-      skip: 13 * (p - 1),
+      take: ITEM_PER_PAGE,
+      skip: ITEM_PER_PAGE * (p - 1),
     }),
     prisma.announcement.count({ where: query }),
   ]);

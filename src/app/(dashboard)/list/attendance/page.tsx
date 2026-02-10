@@ -71,8 +71,8 @@ const AttendancePage = async ({
         attendances: true,
       },
       orderBy: { startTime: "desc" },
-      take: 14,
-      skip: (p - 1) * 14,
+      take: ITEM_PER_PAGE,
+      skip: (p - 1) * ITEM_PER_PAGE,
     }),
     prisma.lesson.count({ where }),
   ]);

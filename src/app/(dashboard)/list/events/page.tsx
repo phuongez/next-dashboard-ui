@@ -73,8 +73,8 @@ const EventListPage = async ({
       where,
       include: { class: true },
       orderBy: { startTime: "desc" },
-      take: 14,
-      skip: 14 * (p - 1),
+      take: ITEM_PER_PAGE,
+      skip: ITEM_PER_PAGE * (p - 1),
     }),
     prisma.event.count({ where }),
   ]);

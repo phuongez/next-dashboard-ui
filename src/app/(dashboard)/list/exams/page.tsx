@@ -114,8 +114,8 @@ export default async function ExamListPage({
         },
       },
       orderBy,
-      take: 14,
-      skip: (p - 1) * 14,
+      take: ITEM_PER_PAGE,
+      skip: (p - 1) * ITEM_PER_PAGE,
     }),
     prisma.exam.count({ where }),
   ]);
@@ -140,7 +140,9 @@ export default async function ExamListPage({
       <table className="w-full border-collapse">
         <thead>
           <tr>
-            <th className="text-left text-sm text-gray-500">Tên bài</th>
+            <th className="hidden md:table-cell text-left text-sm text-gray-500">
+              Tên bài
+            </th>
             <SortableTH label="Môn" sortKey="subject" />
             <SortableTH label="Lớp" sortKey="class" />
             <th className="hidden md:table-cell text-left text-sm text-gray-500">
@@ -157,11 +159,11 @@ export default async function ExamListPage({
           {exams.map((e) => (
             <tr
               key={e.id}
-              className="border-b border-gray-200 text-sm hover:bg-gray-100"
+              className="border-b border-gray-200 text-sm hover:bg-gray-100 "
             >
-              <td className="p-4">{e.title}</td>
+              <td className="p-4 hidden md:table-cell">{e.title}</td>
 
-              <td className="">{e.lesson.subject.name}</td>
+              <td className="py-4">{e.lesson.subject.name}</td>
 
               <td className="">{e.lesson.class.name}</td>
 

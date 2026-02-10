@@ -153,7 +153,9 @@ export default async function ResultListPage({
           <tr>
             <th className="text-left text-sm text-gray-500">Học sinh</th>
             <SortableTH label="Lớp" sortKey="class" />
-            <th className="text-left text-sm text-gray-500">Bài</th>
+            <th className="hidden md:table-cell text-left text-sm text-gray-500">
+              Bài
+            </th>
             <SortableTH label="Môn" sortKey="subject" />
             <SortableTH label="Điểm" sortKey="score" />
             <th className="text-left text-sm text-gray-500 hidden md:table-cell">
@@ -189,7 +191,7 @@ export default async function ResultListPage({
 
                 <td className="">{assessment.lesson.class.name}</td>
 
-                <td className="">{assessment.title}</td>
+                <td className="hidden md:table-cell">{assessment.title}</td>
 
                 <td className="">{assessment.lesson.subject.name}</td>
 

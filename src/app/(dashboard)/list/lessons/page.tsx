@@ -92,8 +92,8 @@ export default async function LessonListPage({
         attendances: { select: { id: true } }, // 👈 để xác định đã điểm danh
       },
       orderBy,
-      take: 12,
-      skip: (p - 1) * 12,
+      take: ITEM_PER_PAGE,
+      skip: (p - 1) * ITEM_PER_PAGE,
     }),
     prisma.lesson.count({ where }),
   ]);
@@ -166,7 +166,9 @@ export default async function LessonListPage({
                   })}
                 </td>
 
-                <td className=" text-left">{isCompleted ? "✅" : "—"}</td>
+                <td className="hidden md:table-cell text-left">
+                  {isCompleted ? "✅" : "—"}
+                </td>
 
                 {role === "admin" && (
                   <td>
