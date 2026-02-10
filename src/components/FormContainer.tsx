@@ -76,6 +76,8 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
             name: true,
             class: true,
             subject: true,
+            startTime: true,
+            endTime: true,
           },
         });
         relatedData = { lessons: examLessons };

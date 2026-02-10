@@ -29,17 +29,32 @@ type Lesson = {
   subject: { name: string };
 };
 
-const toDatetimeLocal = (value?: string) => {
-  if (!value) return "";
-  const d = new Date(value.replace(" ", "T")); // an toàn Safari
-  if (isNaN(d.getTime())) return "";
+const toDate = (value?: string | Date | number | null): Date | null => {
+  if (!value) return null;
+
+  if (value instanceof Date) return value;
+
+  if (typeof value === "number") return new Date(value);
+
+  if (typeof value === "string") {
+    // Safari không parse "yyyy-MM-dd HH:mm:ss"
+    const safe = value.includes("T") ? value : value.replace(" ", "T");
+    const d = new Date(safe);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  return null;
+};
+
+const toDatetimeLocal = (value?: any) => {
+  const d = toDate(value);
+  if (!d) return "";
   return format(d, "yyyy-MM-dd'T'HH:mm");
 };
 
-const toDisplayDatetime = (value?: string) => {
-  if (!value) return "";
-  const d = new Date(value.replace(" ", "T"));
-  if (isNaN(d.getTime())) return "";
+const toDisplayDatetime = (value?: any) => {
+  const d = toDate(value);
+  if (!d) return "";
   return format(d, "HH:mm dd/MM/yyyy");
 };
 
@@ -85,6 +100,7 @@ const ExamForm = ({
     if (!lesson) return;
 
     setSelectedLesson(lesson);
+    console.log(selectedLesson);
 
     setValue("startTime", toDatetimeLocal(lesson.startTime));
     setValue("endTime", toDatetimeLocal(lesson.endTime));
@@ -92,7 +108,7 @@ const ExamForm = ({
 
   const [state, formAction] = useActionState(
     type === "create" ? createExam : updateExam,
-    { success: false, error: false }
+    { success: false, error: false },
   );
 
   const router = useRouter();
@@ -149,7 +165,7 @@ const ExamForm = ({
         </div>
 
         {/* Hiển thị thời gian đã xác định */}
-        <div className="flex flex-col gap-2 w-full md:w-1/3">
+        <div className="flex flex-col gap-2 w-full md:w-1/2">
           <label className="text-xs text-gray-500">
             Thời gian bài kiểm tra
           </label>
