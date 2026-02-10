@@ -83,6 +83,23 @@ const ExamForm = ({
         <InputField
           label="Thời gian bắt đầu"
           name="startTime"
+          register={register}
+          error={errors?.startTime}
+          type="datetime-local"
+          inputProps={{ disabled: true }}
+        />
+
+        <InputField
+          label="Thời gian kết thúc"
+          name="endTime"
+          register={register}
+          error={errors?.endTime}
+          type="datetime-local"
+          inputProps={{ disabled: true }}
+        />
+        {/* <InputField
+          label="Thời gian bắt đầu"
+          name="startTime"
           defaultValue={data?.startTime}
           register={register}
           error={errors?.startTime}
@@ -95,7 +112,7 @@ const ExamForm = ({
           register={register}
           error={errors?.endTime}
           type="datetime-local"
-        />
+        /> */}
         {data && (
           <InputField
             label="Id"

@@ -90,6 +90,7 @@ export default async function LessonListPage({
         class: { select: { name: true } },
         teacher: { select: { name: true, surname: true } },
         attendances: { select: { id: true } }, // 👈 để xác định đã điểm danh
+        exams: { select: { id: true } },
       },
       orderBy,
       take: ITEM_PER_PAGE,
@@ -118,14 +119,17 @@ export default async function LessonListPage({
           <tr>
             <SortableTH label="Môn học" sortKey="subject" />
             <SortableTH label="Lớp" sortKey="class" />
-            <th className="hidden lg:table-cell text-left text-sm text-gray-500">
+            <th className="hidden md:table-cell text-left text-sm text-gray-500">
               Giáo viên
             </th>
             <SortableTH label="Ngày" sortKey="date" />
-            <th className="hidden lg:table-cell text-left text-sm text-gray-500">
+            <th className="hidden md:table-cell text-left text-sm text-gray-500">
               Thời gian
             </th>
-            <th className="hidden lg:table-cell text-left text-sm text-gray-500">
+            <th className="hidden md:table-cell text-left text-sm text-gray-500">
+              Kiểm tra
+            </th>
+            <th className="hidden md:table-cell text-left text-sm text-gray-500">
               Hoàn thành
             </th>
             {role === "admin" && (
@@ -166,6 +170,9 @@ export default async function LessonListPage({
                   })}
                 </td>
 
+                <td className="hidden md:table-cell text-left">
+                  {l.exams.length > 0 ? "Có" : "—"}
+                </td>
                 <td className="hidden md:table-cell text-left">
                   {isCompleted ? "✅" : "—"}
                 </td>
