@@ -11,12 +11,21 @@ import {
   startTransition,
   useActionState,
   useEffect,
+  useState,
 } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import z from "zod";
+import { format } from "date-fns";
 
 type ExamFormInput = z.infer<typeof examFormSchema>;
+
+type Lesson = {
+  id: number;
+  startTime: string;
+  endTime: string;
+  name?: string;
+};
 
 const ExamForm = ({
   type,
@@ -29,9 +38,13 @@ const ExamForm = ({
   setOpen: Dispatch<SetStateAction<boolean>>;
   relatedData?: any;
 }) => {
+  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<ExamFormInput>({
     resolver: zodResolver(examFormSchema),
@@ -65,6 +78,23 @@ const ExamForm = ({
   }, [state, router, type, setOpen]);
 
   const { lessons } = relatedData;
+
+  const lessonId = Number(watch("lessonId"));
+
+  useEffect(() => {
+    if (!lessonId) return;
+
+    const lesson = lessons.find((l: Lesson) => l.id === lessonId);
+    if (!lesson) return;
+
+    setSelectedLesson(lesson);
+
+    setValue(
+      "startTime",
+      format(new Date(lesson.startTime), "yyyy-MM-dd'T'HH:mm")
+    );
+    setValue("endTime", format(new Date(lesson.endTime), "yyyy-MM-dd'T'HH:mm"));
+  }, [lessonId]);
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
