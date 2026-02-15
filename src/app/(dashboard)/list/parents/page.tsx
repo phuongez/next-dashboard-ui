@@ -26,6 +26,11 @@ const ParentListPage = async ({
       accessor: "info",
     },
     {
+      header: "ID",
+      accessor: "id",
+      className: "hidden lg:table-cell",
+    },
+    {
       header: "Tên học sinh",
       accessor: "students",
       className: "hidden md:table-cell",
@@ -61,6 +66,7 @@ const ParentListPage = async ({
           <p className="text-xs text-gray-500">{item?.email}</p>
         </div>
       </td>
+      {role === "admin" && <td className="hidden lg:table-cell">{item.id}</td>}
       <td className="hidden lg:table-cell">
         {item.students.map((student, index) => (
           <span key={student.id}>

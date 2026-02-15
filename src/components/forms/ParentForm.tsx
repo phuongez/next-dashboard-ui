@@ -55,7 +55,7 @@ const ParentForm = ({ type, data, setOpen, relatedData }: Props) => {
     {
       success: false,
       error: false,
-    }
+    },
   );
 
   /* ================= SUBMIT ================= */
@@ -175,7 +175,7 @@ const ParentForm = ({ type, data, setOpen, relatedData }: Props) => {
       </div>
 
       {/* ===== STUDENTS ===== */}
-      <div className="flex flex-col gap-2">
+      {/* <div className="flex flex-col gap-2">
         <label className="text-xs text-gray-500">Con đang theo học</label>
 
         <select
@@ -195,7 +195,7 @@ const ParentForm = ({ type, data, setOpen, relatedData }: Props) => {
             {errors.students.message.toString()}
           </p>
         )}
-      </div>
+      </div> */}
 
       {state.error && (
         <span className="text-red-500 text-sm">
@@ -203,7 +203,7 @@ const ParentForm = ({ type, data, setOpen, relatedData }: Props) => {
         </span>
       )}
 
-      <button className="bg-blue-500 text-white py-2 rounded-md">
+      <button className="bg-lamaYellow text-white py-2 rounded-md">
         {type === "create" ? "Tạo mới" : "Cập nhật"}
       </button>
     </form>

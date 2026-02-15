@@ -83,7 +83,7 @@ const LessonForm = ({ type, data, setOpen, relatedData }: Props) => {
   useEffect(() => {
     if (state.success) {
       toast.success(
-        type === "create" ? "Đã tạo tiết học" : "Đã cập nhật tiết học"
+        type === "create" ? "Đã tạo tiết học" : "Đã cập nhật tiết học",
       );
       setOpen(false);
       router.refresh();
@@ -180,7 +180,7 @@ const LessonForm = ({ type, data, setOpen, relatedData }: Props) => {
             <option value="">Chọn giáo viên</option>
             {teachers.map((t) => (
               <option key={t.id} value={t.id}>
-                {t.name} {t.surname}
+                {t.surname} {t.name}
               </option>
             ))}
           </select>
